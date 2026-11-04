@@ -5,8 +5,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\\RetroGames.Model\\RetroGames.Model.csproj" />
-    <ProjectReference Include="..\\RetroGames.Repository\\RetroGames.Repository.csproj" />
-    <ProjectReference Include="..\\RetroGames.WebApi.ApiModels\\RetroGames.WebApi.ApiModels.csproj" />
+    <ProjectReference Include="../RetroGames.Model/RetroGames.Model.csproj" />
+    <ProjectReference Include="../RetroGames.Repository/RetroGames.Repository.csproj" />
+    <ProjectReference Include="../RetroGames.WebApi.ApiModels/RetroGames.WebApi.ApiModels.csproj" />
   </ItemGroup>
 </Project>

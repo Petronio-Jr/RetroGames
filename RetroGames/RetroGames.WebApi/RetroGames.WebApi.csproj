@@ -5,11 +5,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\\RetroGames.Model\\RetroGames.Model.csproj" />
-    <ProjectReference Include="..\\RetroGames.Repository\\RetroGames.Repository.csproj" />
-    <ProjectReference Include="..\\RetroGames.Services\\RetroGames.Services.csproj" />
-    <ProjectReference Include="..\\RetroGames.WebApi.ApiModels\\RetroGames.WebApi.ApiModels.csproj" />
-    <PackageReference Include="FluentValidation" Version="12.1.0" />
-    <PackageReference Include="Swashbuckle.AspNetCore" Version="10.0.1" />
+    <ProjectReference Include="../RetroGames.Model/RetroGames.Model.csproj" />
+    <ProjectReference Include="../RetroGames.Repository/RetroGames.Repository.csproj" />
+    <ProjectReference Include="../RetroGames.Services/RetroGames.Services.csproj" />
+    <ProjectReference Include="../RetroGames.WebApi.ApiModels/RetroGames.WebApi.ApiModels.csproj" />
   </ItemGroup>
 </Project>
