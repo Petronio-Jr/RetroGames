@@ -3,7 +3,7 @@ namespace RetroGames.Model.Model;
 public class Jogo
 {
     // co_seq_jogo
-    public int JogoId { get; set; }
+    public int Id { get; set; }
 
     // no_jogo
     public string Nome { get; set; } = string.Empty;
