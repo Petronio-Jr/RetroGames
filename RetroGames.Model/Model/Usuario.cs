@@ -3,7 +3,7 @@ namespace RetroGames.Model.Model;
 public class Usuario
 {
     // co_seq_usuario
-    public int UsuarioId { get; set; }
+    public int Id { get; set; }
 
     // no_usuario
     public string Nome { get; set; } = string.Empty;
