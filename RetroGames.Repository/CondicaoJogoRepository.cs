@@ -1,5 +1,6 @@
 using MySqlConnector;
 using RetroGames.Model.Model;
+using System.Data.Common;
 
 namespace RetroGames.Repository;
 

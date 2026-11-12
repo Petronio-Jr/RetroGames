@@ -1,4 +1,4 @@
-using MySqlConnector;
+using System.Data.Common;
 using RetroGames.Model.Model;
 
 namespace RetroGames.Repository;
@@ -155,6 +155,26 @@ public class JogoRepository : RepositoryBase, IJogoRepository
         return MapearJogo(reader);
     }
 
+    public async Task<bool> PossuiJogosAsync(int idPlataforma)
+    {
+        const string sql = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM tb_jogo
+                WHERE co_plataforma = @idPlataforma
+            ) AS possui_jogos;
+            """;
+
+        await using var conexao = await AbrirConexaoAsync();
+        await using var comando = CriarComando(conexao, sql);
+
+        AdicionarParametro(comando, "@idPlataforma", idPlataforma);
+
+        var resultado = await comando.ExecuteScalarAsync();
+
+        return Convert.ToInt32(resultado) == 1;
+    }
+
     public async Task<int> InserirAsync(Jogo jogo)
     {
         await using var conexao = await AbrirConexaoAsync();
@@ -229,7 +249,7 @@ public class JogoRepository : RepositoryBase, IJogoRepository
     }
 
     private void AdicionarParametrosJogo(
-        MySqlCommand comando,
+        DbCommand comando,
         Jogo jogo)
     {
         AdicionarParametro(comando, "@nome", jogo.Nome);
@@ -238,11 +258,11 @@ public class JogoRepository : RepositoryBase, IJogoRepository
         AdicionarParametro(comando, "@preco", jogo.Preco);
         AdicionarParametro(comando, "@estoque", jogo.Estoque);
         AdicionarParametro(comando, "@ativo", jogo.Ativo);
-        AdicionarParametro(comando, "@plataformaId", jogo.PlataformaId);
-        AdicionarParametro(comando, "@condicaoJogoId", jogo.CondicaoJogoId);
+        AdicionarParametro(comando, "@plataformaId", jogo.IdPlataforma);
+        AdicionarParametro(comando, "@condicaoJogoId", jogo.IdCondicaoJogo);
     }
 
-    private static Jogo MapearJogo(MySqlDataReader reader)
+    private static Jogo MapearJogo(DbDataReader reader)
     {
         return new Jogo
         {
@@ -256,8 +276,8 @@ public class JogoRepository : RepositoryBase, IJogoRepository
             Estoque = reader.GetInt32(reader.GetOrdinal("qt_estoque")),
             Ativo = reader.GetBoolean(reader.GetOrdinal("st_ativo")),
             DataCadastro = reader.GetDateTime(reader.GetOrdinal("dt_cadastro")),
-            PlataformaId = reader.GetInt32(reader.GetOrdinal("co_plataforma")),
-            CondicaoJogoId = reader.GetInt32(reader.GetOrdinal("co_condicao_jogo"))
+            IdPlataforma = reader.GetInt32(reader.GetOrdinal("co_plataforma")),
+            IdCondicaoJogo = reader.GetInt32(reader.GetOrdinal("co_condicao_jogo"))
         };
     }
 }

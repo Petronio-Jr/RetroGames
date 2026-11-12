@@ -94,7 +94,7 @@ public class PlataformaService : IPlataformaService
         await BuscarPorIdAsync(id);
 
         // Verifica se existem jogos associados.
-        if (await _repositorio.Plataforma.PossuiJogosAsync(id))
+        if (await _repositorio.Jogo.PossuiJogosAsync(id))
         {
             throw new BusinessRuleException(
                 BusinessErrors.PlataformaPossuiJogos);

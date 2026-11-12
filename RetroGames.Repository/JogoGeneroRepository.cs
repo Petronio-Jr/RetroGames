@@ -1,4 +1,5 @@
 using RetroGames.Model.Model;
+using System.Data.Common;
 
 namespace RetroGames.Repository;
 
@@ -121,7 +122,7 @@ public class JogoGeneroRepository : RepositoryBase, IJogoGeneroRepository
     }
 
     private static JogoGenero MapearJogoGenero(
-        MySqlConnector.MySqlDataReader reader)
+        DbDataReader reader)
     {
         return new JogoGenero
         {

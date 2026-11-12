@@ -8,5 +8,5 @@ public class Usuario
     public string SenhaHash { get; set; } = string.Empty;
     public bool Ativo { get; set; }
     public DateTime DataCadastro { get; set; }
-    public int PerfilId { get; set; }
+    public int IdPerfil { get; set; }
 }

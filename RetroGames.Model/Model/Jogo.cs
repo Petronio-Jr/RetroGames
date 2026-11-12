@@ -10,6 +10,6 @@ public class Jogo
     public int Estoque { get; set; }
     public bool Ativo { get; set; }
     public DateTime DataCadastro { get; set; }
-    public int PlataformaId { get; set; }
-    public int CondicaoJogoId { get; set; }
+    public int IdPlataforma { get; set; }
+    public int IdCondicaoJogo { get; set; }
 }

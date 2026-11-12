@@ -14,6 +14,8 @@ public interface IJogoRepository
 
     Task<Jogo?> BuscarPorIdAsync(int id);
 
+    Task<bool> PossuiJogosAsync(int idPlataforma);
+
     Task<int> InserirAsync(Jogo jogo);
 
     Task AlterarAsync(Jogo jogo);

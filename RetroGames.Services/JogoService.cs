@@ -189,7 +189,7 @@ public class JogoService : IJogoService
     {
         // Valida a plataforma.
         var plataforma = await _repositorio.Plataforma
-            .BuscarPorIdAsync(jogo.PlataformaId);
+            .BuscarPorIdAsync(jogo.IdPlataforma);
 
         if (plataforma is null)
         {
@@ -200,7 +200,7 @@ public class JogoService : IJogoService
         // Valida a condição.
         var condicoes = await _repositorio.CondicaoJogo.ListarAsync();
 
-        if (!condicoes.Any(c => c.Id == jogo.CondicaoJogoId))
+        if (!condicoes.Any(c => c.Id == jogo.IdCondicaoJogo))
         {
             throw new BusinessRuleException(
                 BusinessErrors.CondicaoNaoEncontrada);
@@ -262,13 +262,13 @@ public class JogoService : IJogoService
                 Jogo = jogo,
 
                 NomePlataforma = plataformasPorId.TryGetValue(
-                    jogo.PlataformaId,
+                    jogo.IdPlataforma,
                     out var plataforma)
                     ? plataforma.Nome
                     : string.Empty,
 
                 DescricaoCondicao = condicoesPorId.TryGetValue(
-                    jogo.CondicaoJogoId,
+                    jogo.IdCondicaoJogo,
                     out var condicao)
                     ? condicao.Descricao
                     : string.Empty,

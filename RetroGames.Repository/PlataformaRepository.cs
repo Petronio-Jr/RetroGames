@@ -1,5 +1,5 @@
-using MySqlConnector;
 using RetroGames.Model.Model;
+using System.Data.Common;
 
 namespace RetroGames.Repository;
 
@@ -10,7 +10,6 @@ public class PlataformaRepository : RepositoryBase, IPlataformaRepository
     {
     }
 
-    // 1. Lista todas as plataformas
     public async Task<List<Plataforma>> ListarAsync()
     {
         const string sql = """
@@ -37,7 +36,6 @@ public class PlataformaRepository : RepositoryBase, IPlataformaRepository
         return plataformas;
     }
 
-    // 2. Busca uma plataforma pelo ID
     public async Task<Plataforma?> BuscarPorIdAsync(int id)
     {
         const string sql = """
@@ -63,7 +61,6 @@ public class PlataformaRepository : RepositoryBase, IPlataformaRepository
         return MapearPlataforma(reader);
     }
 
-    // 3. Verifica se existe uma plataforma com o nome informado
     public async Task<bool> ExisteComNomeAsync(
         string nome,
         int? idIgnorar = null)
@@ -92,28 +89,6 @@ public class PlataformaRepository : RepositoryBase, IPlataformaRepository
         return Convert.ToInt32(resultado) == 1;
     }
 
-    // 4. Verifica se a plataforma possui jogos
-    public async Task<bool> PossuiJogosAsync(int id)
-    {
-        const string sql = """
-            SELECT EXISTS (
-                SELECT 1
-                FROM tb_jogo
-                WHERE co_plataforma = @id
-            ) AS possui_jogos;
-            """;
-
-        await using var conexao = await AbrirConexaoAsync();
-        await using var comando = CriarComando(conexao, sql);
-
-        AdicionarParametro(comando, "@id", id);
-
-        var resultado = await comando.ExecuteScalarAsync();
-
-        return Convert.ToInt32(resultado) == 1;
-    }
-
-    // 5. Insere uma nova plataforma
     public async Task<int> InserirAsync(Plataforma plataforma)
     {
         const string sql = """
@@ -141,7 +116,7 @@ public class PlataformaRepository : RepositoryBase, IPlataformaRepository
         return checked((int)comando.LastInsertedId);
     }
 
-    // 6. Altera uma plataforma existente
+
     public async Task AlterarAsync(Plataforma plataforma)
     {
         const string sql = """
@@ -164,7 +139,7 @@ public class PlataformaRepository : RepositoryBase, IPlataformaRepository
         await ExecutarGravacaoAsync(comando);
     }
 
-    // 7. Exclui uma plataforma pelo ID
+
     public async Task ExcluirAsync(int id)
     {
         const string sql = """
@@ -180,8 +155,7 @@ public class PlataformaRepository : RepositoryBase, IPlataformaRepository
         await ExecutarGravacaoAsync(comando);
     }
 
-    // Converte cada linha do resultado em um objeto Plataforma
-    private static Plataforma MapearPlataforma(MySqlDataReader reader)
+    private static Plataforma MapearPlataforma(DbDataReader reader)
     {
         return new Plataforma
         {

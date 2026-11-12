@@ -1,3 +1,4 @@
+using System.Data.Common;
 using MySqlConnector;
 
 namespace RetroGames.Repository;
@@ -11,35 +12,41 @@ public abstract class RepositoryBase
         _config = config;
     }
 
-    protected async Task<MySqlConnection> AbrirConexaoAsync()
+    protected async Task<DbConnection> AbrirConexaoAsync()
     {
-        var conexao = new MySqlConnection(_config.ConnectionString);
+        DbConnection conexao =
+            new MySqlConnection(_config.ConnectionString);
 
         await conexao.OpenAsync();
 
         return conexao;
     }
 
-    protected MySqlCommand CriarComando(
-        MySqlConnection conexao,
+    protected DbCommand CriarComando(
+        DbConnection conexao,
         string sql)
     {
-        return new MySqlCommand(sql, conexao);
+        DbCommand comando = conexao.CreateCommand();
+        comando.CommandText = sql;
+
+        return comando;
     }
 
     protected void AdicionarParametro(
-        MySqlCommand comando,
+        DbCommand comando,
         string nome,
         object? valor)
     {
-        comando.Parameters.AddWithValue(
-            nome,
-            valor ?? DBNull.Value
-        );
+        DbParameter parametro = comando.CreateParameter();
+
+        parametro.ParameterName = nome;
+        parametro.Value = valor ?? DBNull.Value;
+
+        comando.Parameters.Add(parametro);
     }
 
     protected async Task<int> ExecutarGravacaoAsync(
-        MySqlCommand comando)
+        DbCommand comando)
     {
         try
         {
