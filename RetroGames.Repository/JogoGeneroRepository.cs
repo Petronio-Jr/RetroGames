@@ -92,7 +92,7 @@ public class JogoGeneroRepository : RepositoryBase, IJogoGeneroRepository
 
             valores.Add($"({parametroJogo}, {parametroGenero})");
 
-            AdicionarParametro(comando, parametroJogo, vinculos[i].Id);
+            AdicionarParametro(comando, parametroJogo, vinculos[i].JogoId);
             AdicionarParametro(comando, parametroGenero, vinculos[i].GeneroId);
         }
 
@@ -125,7 +125,7 @@ public class JogoGeneroRepository : RepositoryBase, IJogoGeneroRepository
     {
         return new JogoGenero
         {
-            Id = reader.GetInt32(reader.GetOrdinal("co_jogo")),
+            JogoId = reader.GetInt32(reader.GetOrdinal("co_jogo")),
             GeneroId = reader.GetInt32(reader.GetOrdinal("co_genero"))
         };
     }
