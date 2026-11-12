@@ -2,6 +2,9 @@ namespace RetroGames.Model.Model;
 
 public class JogoGenero
 {
-    public int JogoId { get; set; }
-    public int GeneroId { get; set; }
+    // co_jogo
+    public int IdJogo { get; set; }
+
+    // co_genero
+    public int IdGenero { get; set; }
 }
