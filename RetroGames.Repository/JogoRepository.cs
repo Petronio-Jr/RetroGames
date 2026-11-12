@@ -207,7 +207,7 @@ public class JogoRepository : RepositoryBase, IJogoRepository
 
         await ExecutarGravacaoAsync(comando);
 
-        return await ObterUltimoIdInseridoAsync(conexao);
+        return checked((int)comando.LastInsertedId);
     }
 
     public async Task AlterarAsync(Jogo jogo)

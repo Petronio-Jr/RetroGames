@@ -22,11 +22,11 @@ public abstract class RepositoryBase
         return conexao;
     }
 
-    protected DbCommand CriarComando(
+    protected MySqlCommand CriarComando(
         DbConnection conexao,
         string sql)
     {
-        DbCommand comando = conexao.CreateCommand();
+        MySqlCommand comando = (MySqlCommand)conexao.CreateCommand();
         comando.CommandText = sql;
 
         return comando;

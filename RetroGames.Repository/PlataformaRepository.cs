@@ -113,7 +113,7 @@ public class PlataformaRepository : RepositoryBase, IPlataformaRepository
 
         await ExecutarGravacaoAsync(comando);
 
-        return await ObterUltimoIdInseridoAsync(conexao);
+        return checked((int)comando.LastInsertedId);
     }
 
 
