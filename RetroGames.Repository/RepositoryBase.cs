@@ -11,7 +11,6 @@ public abstract class RepositoryBase
         _config = config;
     }
 
-    // Abre uma conexão com o banco de dados
     protected async Task<MySqlConnection> AbrirConexaoAsync()
     {
         var conexao = new MySqlConnection(_config.ConnectionString);
@@ -21,7 +20,6 @@ public abstract class RepositoryBase
         return conexao;
     }
 
-    // Cria um comando com o texto SQL informado
     protected MySqlCommand CriarComando(
         MySqlConnection conexao,
         string sql)
@@ -29,7 +27,6 @@ public abstract class RepositoryBase
         return new MySqlCommand(sql, conexao);
     }
 
-    // Adiciona um parâmetro ao comando SQL
     protected void AdicionarParametro(
         MySqlCommand comando,
         string nome,
@@ -41,7 +38,6 @@ public abstract class RepositoryBase
         );
     }
 
-    // Executa comandos de gravação (INSERT ou UPDATE)
     protected async Task<int> ExecutarGravacaoAsync(
         MySqlCommand comando)
     {

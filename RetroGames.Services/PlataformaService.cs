@@ -13,13 +13,11 @@ public class PlataformaService : IPlataformaService
         _repositorio = repositorio;
     }
 
-    // 1. Lista todas as plataformas.
     public async Task<List<Plataforma>> ListarAsync()
     {
         return await _repositorio.Plataforma.ListarAsync();
     }
 
-    // 2. Busca uma plataforma pelo ID.
     public async Task<Plataforma> BuscarPorIdAsync(int id)
     {
         var plataforma = await _repositorio.Plataforma.BuscarPorIdAsync(id);
@@ -33,7 +31,6 @@ public class PlataformaService : IPlataformaService
         return plataforma;
     }
 
-    // 3. Insere uma nova plataforma.
     public async Task<Plataforma> InserirAsync(Plataforma plataforma)
     {
         // Remove espaços do início e do fim do nome.
@@ -61,13 +58,11 @@ public class PlataformaService : IPlataformaService
         return plataforma;
     }
 
-    // 4. Altera uma plataforma existente.
     public async Task<Plataforma> AlterarAsync(Plataforma plataforma)
     {
         // Verifica se a plataforma existe.
         await BuscarPorIdAsync(plataforma.Id);
 
-        // Remove espaços do início e do fim do nome.
         plataforma.Nome = plataforma.Nome.Trim();
 
         // Ignora o próprio ID na verificação de duplicidade.
@@ -93,7 +88,6 @@ public class PlataformaService : IPlataformaService
         return plataforma;
     }
 
-    // 5. Exclui uma plataforma sem jogos vinculados.
     public async Task ExcluirAsync(int id)
     {
         // Verifica se a plataforma existe.
