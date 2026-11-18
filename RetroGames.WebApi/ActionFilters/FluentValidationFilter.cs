@@ -12,13 +12,6 @@ public class FluentValidationFilter : IAsyncActionFilter, IOrderedFilter
 {
     public int Order => -3000;
 
-    private readonly IEnumerable<IValidator> _validators;
-
-    public FluentValidationFilter(IEnumerable<IValidator> validators)
-    {
-        _validators = validators;
-    }
-
     public async Task OnActionExecutionAsync(
         ActionExecutingContext context,
         ActionExecutionDelegate next)
@@ -55,12 +48,17 @@ public class FluentValidationFilter : IAsyncActionFilter, IOrderedFilter
 
             var tipoArgumento = argumento.GetType();
 
-            var validators = _validators
-                .Where(validator =>
-                    validator.CanValidateInstancesOfType(tipoArgumento));
+            // Busca os validators pela interface genérica correta.
+            var tipoValidator = typeof(IValidator<>)
+                .MakeGenericType(tipoArgumento);
 
-            foreach (var validator in validators)
+            var validators = context.HttpContext.RequestServices
+                .GetServices(tipoValidator);
+
+            foreach (var validatorObjeto in validators)
             {
+                var validator = (IValidator)validatorObjeto!;
+
                 // Cria o contexto usando o tipo real do argumento.
                 var tipoContexto = typeof(ValidationContext<>)
                     .MakeGenericType(tipoArgumento);
