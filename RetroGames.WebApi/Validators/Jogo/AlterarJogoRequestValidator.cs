@@ -1,3 +1,4 @@
+
 using FluentValidation;
 using RetroGames.WebApi.ApiModels.Requests;
 
@@ -39,11 +40,5 @@ public class AlterarJogoRequestValidator
         RuleFor(x => x.IdCondicaoJogo)
             .GreaterThan(0)
             .WithMessage("Informe uma condição de jogo válida.");
-
-        RuleFor(x => x.IdsGeneros)
-            .NotNull()
-            .WithMessage("Informe pelo menos um gênero.")
-            .NotEmpty()
-            .WithMessage("Informe pelo menos um gênero.");
     }
 }
