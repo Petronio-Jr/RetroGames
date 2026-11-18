@@ -1,13 +1,16 @@
+
 using DotNetEnv;
+using FluentValidation;
+using Microsoft.AspNetCore.Mvc;
+using RetroGames.WebApi.ActionFilters;
+using RetroGames.WebApi.ApiModels.Responses;
 using RetroGames.WebApi.Configuration;
 using RetroGames.WebApi.Middlewares;
 
-// Carrega as variáveis do arquivo .env
 Env.TraversePath().Load();
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Obtém a string de conexão
 var connectionString =
     builder.Configuration.GetConnectionString("Default");
 
@@ -18,37 +21,55 @@ if (string.IsNullOrWhiteSpace(connectionString))
     );
 }
 
-// Configuração das dependências
+// Registra os repositórios e serviços.
 builder.Services.AddRepositorios(connectionString);
 builder.Services.AddServicosDeNegocio();
 
-// Controllers
-builder.Services.AddControllers();
+// Registra os validators do assembly da WebApi.
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
-// Swagger
+// Registra as controllers e o filtro global.
+builder.Services.AddControllers(opcoes =>
+{
+    opcoes.Filters.Add<FluentValidationFilter>();
+});
+
+// Configura o tratamento de erros do ModelState.
+builder.Services.Configure<ApiBehaviorOptions>(opcoes =>
+{
+    opcoes.InvalidModelStateResponseFactory = contexto =>
+    {
+        var erro = ResponseCodes.MODEL_STATE_INVALIDO;
+
+        var response = new RetroGamesResponseApiModel
+        {
+            ResponseCode = erro.Code,
+            ErrorMessage = erro.DefaultMessage
+        };
+
+        return new BadRequestObjectResult(response);
+    };
+});
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Tratamento global de exceções
+// Tratamento global de exceções.
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
 var app = builder.Build();
 
-// O tratamento de exceções deve ser o primeiro middleware
 app.UseExceptionHandler();
 
-// Swagger
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// Demais middlewares
 app.UseAuthorization();
 
-// Rotas
 app.MapControllers();
 
 app.Run();
