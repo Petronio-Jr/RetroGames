@@ -1,3 +1,4 @@
+
 using Microsoft.AspNetCore.Mvc;
 using RetroGames.Services;
 using RetroGames.WebApi.ApiModels.Requests;
@@ -17,6 +18,7 @@ public class JogoController : ControllerBase
         _jogoService = jogoService;
     }
 
+    // GET: api/Jogo
     [HttpGet]
     public async Task<IActionResult> Listar(
         [FromQuery] ListarJogoRequestApiModel request)
@@ -58,6 +60,7 @@ public class JogoController : ControllerBase
         return Ok(response);
     }
 
+    // GET: api/Jogo/{id}
     [HttpGet("{id:int}")]
     public async Task<IActionResult> ListarPorId(int id)
     {
@@ -68,6 +71,68 @@ public class JogoController : ControllerBase
         {
             ResponseCode = ResponseCodes.SUCESSO.Code,
             Data = jogo.ParaDetalheResponse(),
+            ErrorMessage = null
+        };
+
+        return Ok(response);
+    }
+
+    // POST: api/Jogo
+    [HttpPost]
+    public async Task<IActionResult> Inserir(
+        [FromBody] InserirJogoRequestApiModel request)
+    {
+        var criado = await _jogoService.InserirAsync(
+            request.ParaModel(),
+            request.IdsGeneros
+        );
+
+        var response = new RetroGamesResponseApiModel<
+            ListarPorIdJogoResponseApiModel>
+        {
+            ResponseCode = ResponseCodes.SUCESSO.Code,
+            Data = criado.ParaDetalheResponse(),
+            ErrorMessage = null
+        };
+
+        return CreatedAtAction(
+            nameof(ListarPorId),
+            new { id = criado.Jogo.Id },
+            response
+        );
+    }
+
+    // PUT: api/Jogo/{id}
+    [HttpPut("{id:int}")]
+    public async Task<IActionResult> Alterar(
+        int id,
+        [FromBody] AlterarJogoRequestApiModel request)
+    {
+        var alterado = await _jogoService.AlterarAsync(
+            request.ParaModel(id),
+            request.IdsGeneros
+        );
+
+        var response = new RetroGamesResponseApiModel<
+            ListarPorIdJogoResponseApiModel>
+        {
+            ResponseCode = ResponseCodes.SUCESSO.Code,
+            Data = alterado.ParaDetalheResponse(),
+            ErrorMessage = null
+        };
+
+        return Ok(response);
+    }
+
+    // DELETE: api/Jogo/{id}
+    [HttpDelete("{id:int}")]
+    public async Task<IActionResult> Excluir(int id)
+    {
+        await _jogoService.DesativarAsync(id);
+
+        var response = new RetroGamesResponseApiModel
+        {
+            ResponseCode = ResponseCodes.SUCESSO.Code,
             ErrorMessage = null
         };
 
