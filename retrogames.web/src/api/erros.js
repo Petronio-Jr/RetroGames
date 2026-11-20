@@ -1,8 +1,10 @@
 export function obterMensagemErro(erro) {
-  return erro?.response?.data?.errorMessage ?? 'Ocorreu um erro inesperado.';
-}
+  if (!erro.response) {
+    return 'Não foi possível conectar ao servidor.'
+  }
 
-export function obterErrosDosCampos(erro) {
-  const resposta = erro?.response?.data;
-  return resposta?.responseCode === 3 ? (resposta.data ?? {}) : {};
+  return (
+    erro.response.data?.errorMessage ||
+    'Ocorreu um erro inesperado.'
+  )
 }
