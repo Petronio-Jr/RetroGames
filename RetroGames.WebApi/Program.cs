@@ -25,6 +25,9 @@ if (string.IsNullOrWhiteSpace(connectionString))
 builder.Services.AddRepositorios(connectionString);
 builder.Services.AddServicosDeNegocio();
 
+// Registra a autenticação por cookie.
+builder.Services.AddAutenticacao();
+
 // Registra os validators do assembly da WebApi.
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
@@ -86,6 +89,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Primeiro identifica o usuário pelo cookie.
+app.UseAuthentication();
+
+// Depois verifica as permissões.
 app.UseAuthorization();
 
 app.MapControllers();
@@ -95,3 +102,4 @@ app.Run();
 public partial class Program
 {
 }
+

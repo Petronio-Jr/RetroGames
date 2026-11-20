@@ -44,6 +44,12 @@ public class AutenticacaoService : IAutenticacaoService
         string email,
         string senha)
     {
+        var existeAdministrador = await _repositorios.Usuario
+            .ExisteAdministradorAsync();
+
+        if (existeAdministrador)
+            return;
+
         if (string.IsNullOrWhiteSpace(email))
         {
             throw new InvalidOperationException(
@@ -57,12 +63,6 @@ public class AutenticacaoService : IAutenticacaoService
                 "A senha do administrador inicial não foi configurada."
             );
         }
-
-        var existeAdministrador = await _repositorios.Usuario
-            .ExisteAdministradorAsync();
-
-        if (existeAdministrador)
-            return;
 
         var administrador = new Usuario
         {

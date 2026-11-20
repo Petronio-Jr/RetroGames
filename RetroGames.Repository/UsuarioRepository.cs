@@ -11,34 +11,34 @@ public class UsuarioRepository : RepositoryBase, IUsuarioRepository
     {
     }
 
-public async Task<Usuario?> BuscarPorEmailAsync(string email)
-{
-    const string sql = """
-        SELECT
-            co_seq_usuario,
-            no_usuario,
-            ds_email,
-            ds_senha_hash,
-            st_ativo,
-            dt_cadastro,
-            co_perfil
-        FROM tb_usuario
-        WHERE ds_email =
-            CONVERT(@email USING utf8mb4) COLLATE utf8mb4_unicode_ci;
-        """;
+    public async Task<Usuario?> BuscarPorEmailAsync(string email)
+    {
+        const string sql = """
+            SELECT
+                co_seq_usuario,
+                no_usuario,
+                ds_email,
+                ds_senha_hash,
+                st_ativo,
+                dt_cadastro,
+                co_perfil
+            FROM tb_usuario
+            WHERE ds_email =
+                CONVERT(@email USING utf8mb4) COLLATE utf8mb4_unicode_ci;
+            """;
 
-    await using var conexao = await AbrirConexaoAsync();
-    await using var comando = CriarComando(conexao, sql);
+        await using var conexao = await AbrirConexaoAsync();
+        await using var comando = CriarComando(conexao, sql);
 
-    AdicionarParametro(comando, "@email", email);
+        AdicionarParametro(comando, "@email", email);
 
-    await using var reader = await comando.ExecuteReaderAsync();
+        await using var reader = await comando.ExecuteReaderAsync();
 
-    if (!await reader.ReadAsync())
-        return null;
+        if (!await reader.ReadAsync())
+            return null;
 
-    return MapearUsuario(reader);
-}
+        return MapearUsuario(reader);
+    }
 
     public async Task<Usuario?> BuscarPorIdAsync(int id)
     {
