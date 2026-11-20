@@ -21,7 +21,7 @@ public static class BusinessErrors
         new(102, "Não é possível excluir: existem jogos desta plataforma.", HttpStatusCode.Conflict);
 
     public static readonly BusinessError JogoNaoEncontrado =
-        new(103, "O id do jogo não existe.", HttpStatusCode.NotFound);
+        new(103, "Jogo não encontrado.", HttpStatusCode.NotFound);
 
     public static readonly BusinessError CondicaoNaoEncontrada =
         new(104, "A condição de jogo não existe.", HttpStatusCode.NotFound);
