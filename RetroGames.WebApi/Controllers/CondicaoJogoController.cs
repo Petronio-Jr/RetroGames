@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RetroGames.Services;
 using RetroGames.WebApi.ApiModels.Responses;
@@ -17,6 +18,7 @@ public class CondicaoJogoController : ControllerBase
         _condicaoJogoService = condicaoJogoService;
     }
 
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> Listar()
     {

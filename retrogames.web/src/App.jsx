@@ -1,11 +1,11 @@
 import { Routes, Route } from 'react-router-dom'
 
 import Layout from './components/Layout'
-import Catalogo from './pages/Catalogo'
+import Catalogo from './pages/Catalogo/Catalogo'
 import DetalheJogo from './pages/DetalheJogo'
 import NaoEncontrada from './pages/NaoEncontrada'
 
-export default function App() {
+function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
@@ -16,3 +16,5 @@ export default function App() {
     </Routes>
   )
 }
+
+export default App
