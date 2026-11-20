@@ -1,4 +1,3 @@
-
 using RetroGames.Model.Model;
 using RetroGames.Services.ServiceModels;
 using RetroGames.WebApi.ApiModels.Requests;
@@ -8,10 +7,12 @@ namespace RetroGames.WebApi.Mappers;
 
 public static class JogoMapper
 {
+    
     public static (
         string? Busca,
         int? IdPlataforma,
         int? IdGenero,
+        bool IncluirInativos,
         int Pagina,
         int TamanhoPagina
     ) ParaFiltro(this ListarJogoRequestApiModel request)
@@ -20,10 +21,12 @@ public static class JogoMapper
             request.Busca,
             request.IdPlataforma,
             request.IdGenero,
+            request.IncluirInativos,
             request.Pagina,
             request.TamanhoPagina
         );
     }
+
 
     public static ListarJogoResponseApiModel ParaResponse(
         this JogoDetalheServiceModel detalhe)

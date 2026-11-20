@@ -1,4 +1,3 @@
-
 using RetroGames.Model.Model;
 using RetroGames.Services.ServiceModels;
 
@@ -10,6 +9,7 @@ public interface IJogoService
         string? busca,
         int? idPlataforma,
         int? idGenero,
+        bool incluirInativos,
         int pagina,
         int tamanhoPagina);
 

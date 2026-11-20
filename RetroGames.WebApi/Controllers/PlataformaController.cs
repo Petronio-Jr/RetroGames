@@ -1,7 +1,9 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RetroGames.Services;
 using RetroGames.WebApi.ApiModels.Requests;
 using RetroGames.WebApi.ApiModels.Responses;
+using RetroGames.WebApi.Configuration;
 using RetroGames.WebApi.Mappers;
 
 namespace RetroGames.WebApi.Controllers;
@@ -19,6 +21,7 @@ public class PlataformaController : ControllerBase
     }
 
     // GET: api/Plataforma
+    [AllowAnonymous]
     [HttpGet]
     public async Task<IActionResult> Listar()
     {
@@ -40,6 +43,7 @@ public class PlataformaController : ControllerBase
     }
 
     // GET: api/Plataforma/{id}
+    [AllowAnonymous]
     [HttpGet("{id:int}")]
     public async Task<IActionResult> ListarPorId(int id)
     {
@@ -59,6 +63,7 @@ public class PlataformaController : ControllerBase
     }
 
     // POST: api/Plataforma
+    [Authorize(Policy = Politicas.Administrador)]
     [HttpPost]
     public async Task<IActionResult> Inserir(
         [FromBody] InserirPlataformaRequestApiModel request)
@@ -84,6 +89,7 @@ public class PlataformaController : ControllerBase
     }
 
     // PUT: api/Plataforma/{id}
+    [Authorize(Policy = Politicas.Administrador)]
     [HttpPut("{id:int}")]
     public async Task<IActionResult> Alterar(
         int id,
@@ -106,6 +112,7 @@ public class PlataformaController : ControllerBase
     }
 
     // DELETE: api/Plataforma/{id}
+    [Authorize(Policy = Politicas.Administrador)]
     [HttpDelete("{id:int}")]
     public async Task<IActionResult> Excluir(int id)
     {

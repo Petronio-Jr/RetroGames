@@ -8,10 +8,14 @@ namespace RetroGames.Services;
 public class JogoService : IJogoService
 {
     private readonly IRepositorySet _repositorio;
+    private readonly IUsuarioAtualService _usuarioAtualService;
 
-    public JogoService(IRepositorySet repositorio)
+    public JogoService(
+        IRepositorySet repositorio,
+        IUsuarioAtualService usuarioAtualService)
     {
         _repositorio = repositorio;
+        _usuarioAtualService = usuarioAtualService;
     }
 
     // 1. Lista jogos com filtros, paginação e detalhes.
@@ -19,6 +23,7 @@ public class JogoService : IJogoService
         string? busca,
         int? idPlataforma,
         int? idGenero,
+        bool incluirInativos,
         int pagina,
         int tamanhoPagina)
     {
@@ -36,10 +41,21 @@ public class JogoService : IJogoService
                 .ToList();
         }
 
+        // Somente administradores podem incluir jogos inativos.
+        var podeIncluirInativos =
+            _usuarioAtualService.EhAdministrador && incluirInativos;
+
         var resultado = await _repositorio.Jogo.ListarAsync(
-            busca, idPlataforma, idsJogos, false, pagina, tamanhoPagina);
+            busca,
+            idPlataforma,
+            idsJogos,
+            podeIncluirInativos,
+            pagina,
+            tamanhoPagina
+        );
 
         var jogosDetalhados = await MontarDetalhesAsync(resultado.Jogos);
+
         return (jogosDetalhados, resultado.Total);
     }
 
@@ -48,19 +64,30 @@ public class JogoService : IJogoService
     {
         var jogo = await _repositorio.Jogo.BuscarPorIdAsync(id);
 
-        if (jogo is null || !jogo.Ativo)
-            throw new BusinessRuleException(BusinessErrors.JogoNaoEncontrado);
+        // Jogos inativos só podem ser consultados por administradores.
+        if (jogo is null ||
+            (!jogo.Ativo && !_usuarioAtualService.EhAdministrador))
+        {
+            throw new BusinessRuleException(
+                BusinessErrors.JogoNaoEncontrado
+            );
+        }
 
-        var detalhes = await MontarDetalhesAsync(new List<Jogo> { jogo });
+        var detalhes = await MontarDetalhesAsync(
+            new List<Jogo> { jogo }
+        );
+
         return detalhes[0];
     }
 
     // 3. Insere um jogo e seus gêneros em uma transação.
     public async Task<JogoDetalheServiceModel> InserirAsync(
-        Jogo jogo, List<int> generosIds)
+        Jogo jogo,
+        List<int> generosIds)
     {
         jogo.Nome = jogo.Nome.Trim();
         jogo.Ativo = true;
+
         await ValidarReferenciasAsync(jogo, generosIds);
 
         var transactionOptions = new TransactionOptions
@@ -70,7 +97,8 @@ public class JogoService : IJogoService
         };
 
         using (var transactionScope = new TransactionScope(
-            TransactionScopeOption.Required, transactionOptions,
+            TransactionScopeOption.Required,
+            transactionOptions,
             TransactionScopeAsyncFlowOption.Enabled))
         {
             jogo.Id = await _repositorio.Jogo.InserirAsync(jogo);
@@ -85,6 +113,7 @@ public class JogoService : IJogoService
                 .ToList();
 
             await _repositorio.JogoGenero.InserirAsync(vinculos);
+
             transactionScope.Complete();
         }
 
@@ -93,14 +122,21 @@ public class JogoService : IJogoService
 
     // 4. Altera um jogo e substitui seus gêneros.
     public async Task<JogoDetalheServiceModel> AlterarAsync(
-        Jogo jogo, List<int> generosIds)
+        Jogo jogo,
+        List<int> generosIds)
     {
-        var jogoExistente = await _repositorio.Jogo.BuscarPorIdAsync(jogo.Id);
+        var jogoExistente = await _repositorio.Jogo
+            .BuscarPorIdAsync(jogo.Id);
 
         if (jogoExistente is null)
-            throw new BusinessRuleException(BusinessErrors.JogoNaoEncontrado);
+        {
+            throw new BusinessRuleException(
+                BusinessErrors.JogoNaoEncontrado
+            );
+        }
 
         jogo.Nome = jogo.Nome.Trim();
+
         await ValidarReferenciasAsync(jogo, generosIds);
 
         var transactionOptions = new TransactionOptions
@@ -110,10 +146,12 @@ public class JogoService : IJogoService
         };
 
         using (var transactionScope = new TransactionScope(
-            TransactionScopeOption.Required, transactionOptions,
+            TransactionScopeOption.Required,
+            transactionOptions,
             TransactionScopeAsyncFlowOption.Enabled))
         {
             await _repositorio.Jogo.AlterarAsync(jogo);
+
             await _repositorio.JogoGenero.RemoverPorJogoAsync(jogo.Id);
 
             var vinculos = generosIds
@@ -126,6 +164,7 @@ public class JogoService : IJogoService
                 .ToList();
 
             await _repositorio.JogoGenero.InserirAsync(vinculos);
+
             transactionScope.Complete();
         }
 
@@ -138,30 +177,52 @@ public class JogoService : IJogoService
         var jogo = await _repositorio.Jogo.BuscarPorIdAsync(id);
 
         if (jogo is null)
-            throw new BusinessRuleException(BusinessErrors.JogoNaoEncontrado);
+        {
+            throw new BusinessRuleException(
+                BusinessErrors.JogoNaoEncontrado
+            );
+        }
 
         await _repositorio.Jogo.DesativarAsync(id);
     }
 
-    private async Task ValidarReferenciasAsync(Jogo jogo, List<int> generosIds)
+    private async Task ValidarReferenciasAsync(
+        Jogo jogo,
+        List<int> generosIds)
     {
         var plataforma = await _repositorio.Plataforma
             .BuscarPorIdAsync(jogo.IdPlataforma);
 
         if (plataforma is null)
-            throw new BusinessRuleException(BusinessErrors.PlataformaNaoEncontrada);
+        {
+            throw new BusinessRuleException(
+                BusinessErrors.PlataformaNaoEncontrada
+            );
+        }
 
         var condicoes = await _repositorio.CondicaoJogo.ListarAsync();
 
         if (!condicoes.Any(c => c.Id == jogo.IdCondicaoJogo))
-            throw new BusinessRuleException(BusinessErrors.CondicaoNaoEncontrada);
+        {
+            throw new BusinessRuleException(
+                BusinessErrors.CondicaoNaoEncontrada
+            );
+        }
 
         var generos = await _repositorio.Genero.ListarAsync();
-        var idsValidos = generos.Select(g => g.Id).ToHashSet();
 
-        if (generosIds is null || generosIds.Count == 0 ||
+        var idsValidos = generos
+            .Select(g => g.Id)
+            .ToHashSet();
+
+        if (generosIds is null ||
+            generosIds.Count == 0 ||
             generosIds.Distinct().Any(id => !idsValidos.Contains(id)))
-            throw new BusinessRuleException(BusinessErrors.GeneroNaoEncontrado);
+        {
+            throw new BusinessRuleException(
+                BusinessErrors.GeneroNaoEncontrado
+            );
+        }
     }
 
     // Monta os detalhes de vários jogos utilizando LINQ.
@@ -171,15 +232,22 @@ public class JogoService : IJogoService
         if (jogos.Count == 0)
             return new List<JogoDetalheServiceModel>();
 
-        var idsJogos = jogos.Select(j => j.Id).ToList();
+        var idsJogos = jogos
+            .Select(j => j.Id)
+            .ToList();
 
         var plataformas = await _repositorio.Plataforma.ListarAsync();
         var condicoes = await _repositorio.CondicaoJogo.ListarAsync();
         var generos = await _repositorio.Genero.ListarAsync();
-        var vinculos = await _repositorio.JogoGenero.ListarPorJogosAsync(idsJogos);
 
-        var plataformasPorId = plataformas.ToDictionary(p => p.Id);
-        var condicoesPorId = condicoes.ToDictionary(c => c.Id);
+        var vinculos = await _repositorio.JogoGenero
+            .ListarPorJogosAsync(idsJogos);
+
+        var plataformasPorId = plataformas
+            .ToDictionary(p => p.Id);
+
+        var condicoesPorId = condicoes
+            .ToDictionary(c => c.Id);
 
         return jogos.Select(jogo =>
         {
@@ -191,12 +259,19 @@ public class JogoService : IJogoService
             return new JogoDetalheServiceModel
             {
                 Jogo = jogo,
+
                 NomePlataforma = plataformasPorId.TryGetValue(
-                    jogo.IdPlataforma, out var plataforma)
-                    ? plataforma.Nome : string.Empty,
+                    jogo.IdPlataforma,
+                    out var plataforma)
+                    ? plataforma.Nome
+                    : string.Empty,
+
                 DescricaoCondicao = condicoesPorId.TryGetValue(
-                    jogo.IdCondicaoJogo, out var condicao)
-                    ? condicao.Descricao : string.Empty,
+                    jogo.IdCondicaoJogo,
+                    out var condicao)
+                    ? condicao.Descricao
+                    : string.Empty,
+
                 Generos = generos
                     .Where(g => idsGenerosDoJogo.Contains(g.Id))
                     .ToList()

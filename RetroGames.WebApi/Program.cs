@@ -6,6 +6,7 @@ using RetroGames.WebApi.ActionFilters;
 using RetroGames.WebApi.ApiModels.Responses;
 using RetroGames.WebApi.Configuration;
 using RetroGames.WebApi.Middlewares;
+using RetroGames.WebApi.Services;
 
 Env.TraversePath().Load();
 
@@ -21,23 +22,31 @@ if (string.IsNullOrWhiteSpace(connectionString))
     );
 }
 
-// Registra os repositórios e serviços.
+// Repositórios e serviços de negócio.
 builder.Services.AddRepositorios(connectionString);
 builder.Services.AddServicosDeNegocio();
 
-// Registra a autenticação por cookie.
+// Autenticação e autorização.
 builder.Services.AddAutenticacao();
+builder.Services.AddAutorizacao();
 
-// Registra os validators do assembly da WebApi.
+// Permite acessar o usuário da requisição atual.
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<
+    IUsuarioAtualService,
+    UsuarioAtualService
+>();
+
+// Validators.
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
-// Registra as controllers e o filtro global.
+// Controllers e filtro global.
 builder.Services.AddControllers(opcoes =>
 {
     opcoes.Filters.Add<FluentValidationFilter>();
 });
 
-// Configura o tratamento de erros do ModelState.
+// Tratamento de erros do ModelState.
 builder.Services.Configure<ApiBehaviorOptions>(opcoes =>
 {
     opcoes.InvalidModelStateResponseFactory = contexto =>
@@ -57,7 +66,6 @@ builder.Services.Configure<ApiBehaviorOptions>(opcoes =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Tratamento global de exceções.
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
 
@@ -85,14 +93,15 @@ app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
+    // O Swagger permanece público.
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-// Primeiro identifica o usuário pelo cookie.
+// Identifica o usuário pelo cookie.
 app.UseAuthentication();
 
-// Depois verifica as permissões.
+// Aplica as políticas de autorização.
 app.UseAuthorization();
 
 app.MapControllers();
@@ -102,4 +111,3 @@ app.Run();
 public partial class Program
 {
 }
-
