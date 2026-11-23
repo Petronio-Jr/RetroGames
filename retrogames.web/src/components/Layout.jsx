@@ -1,15 +1,19 @@
 
 import { Link, NavLink, Outlet } from 'react-router-dom'
 
-export default function Layout() {
+function Layout() {
   return (
     <>
+      {/* Barra de navegação */}
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container">
+
+          {/* Marca */}
           <Link className="navbar-brand fw-bold" to="/">
             RetroGames
           </Link>
 
+          {/* Botão do menu para telas menores */}
           <button
             className="navbar-toggler"
             type="button"
@@ -22,28 +26,34 @@ export default function Layout() {
             <span className="navbar-toggler-icon"></span>
           </button>
 
+          {/* Itens da navegação */}
           <div className="collapse navbar-collapse" id="menuNavegacao">
-            <div className="navbar-nav">
-              <NavLink
-                className={({ isActive }) =>
-                  `nav-link ${isActive ? 'active' : ''}`
-                }
-                to="/"
-                end
-              >
-                Catálogo
-              </NavLink>
-            </div>
+            <ul className="navbar-nav me-auto">
+              <li className="nav-item">
+                <NavLink
+                  className={({ isActive }) =>
+                    `nav-link ${isActive ? 'active' : ''}`
+                  }
+                  to="/"
+                  end
+                >
+                  Catálogo
+                </NavLink>
+              </li>
+            </ul>
           </div>
+
         </div>
       </nav>
 
+      {/* Conteúdo da página */}
       <main className="container py-4">
         <Outlet />
       </main>
 
-      <footer className="bg-dark text-light text-center py-3 mt-auto">
-        <div className="container">
+      {/* Rodapé */}
+      <footer className="bg-dark text-light py-3 mt-auto">
+        <div className="container text-center">
           <p className="mb-0">
             RetroGames - Catálogo de jogos retrô
           </p>
@@ -52,3 +62,5 @@ export default function Layout() {
     </>
   )
 }
+
+export default Layout
