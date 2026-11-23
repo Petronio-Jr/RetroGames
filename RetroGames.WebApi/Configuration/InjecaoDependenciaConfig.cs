@@ -19,11 +19,17 @@ public static class InjecaoDependenciaConfig
         });
 
         // Repositórios: uma instância por requisição.
+        // Repositórios: uma instância por requisição.
         services.AddScoped<IPlataformaRepository, PlataformaRepository>();
         services.AddScoped<IJogoRepository, JogoRepository>();
         services.AddScoped<IJogoGeneroRepository, JogoGeneroRepository>();
         services.AddScoped<IGeneroRepository, GeneroRepository>();
         services.AddScoped<ICondicaoJogoRepository, CondicaoJogoRepository>();
+
+// Repositórios do módulo de compras.
+        services.AddScoped<ISituacaoPedidoRepository, SituacaoPedidoRepository>();
+        services.AddScoped<IPedidoRepository, PedidoRepository>();
+        services.AddScoped<IItemPedidoRepository, ItemPedidoRepository>();
 
         // Agregador dos repositórios.
         services.AddScoped<IRepositorySet, RepositorySet>();

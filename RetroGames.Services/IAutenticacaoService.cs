@@ -13,4 +13,10 @@ public interface IAutenticacaoService
         string email,
         string senha
     );
+
+    Task<Usuario> CadastrarClienteAsync(
+        string nome,
+        string email,
+        string senha
+    );
 }

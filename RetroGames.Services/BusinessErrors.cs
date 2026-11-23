@@ -1,4 +1,3 @@
-
 using System.Net;
 
 namespace RetroGames.Services;
@@ -28,4 +27,7 @@ public static class BusinessErrors
 
     public static readonly BusinessError GeneroNaoEncontrado =
         new(105, "O gênero do jogo não existe.", HttpStatusCode.NotFound);
+
+    public static readonly BusinessError EmailJaCadastrado =
+        new(106, "Já existe uma conta com este e-mail.", HttpStatusCode.Conflict);
 }

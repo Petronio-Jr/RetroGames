@@ -80,4 +80,39 @@ public class AutenticacaoService : IAutenticacaoService
 
         await _repositorios.Usuario.InserirAsync(administrador);
     }
+
+    public async Task<Usuario> CadastrarClienteAsync(
+        string nome,
+        string email,
+        string senha)
+    {
+        var cliente = new Usuario
+        {
+            Nome = nome.Trim(),
+            Email = email.Trim(),
+            Ativo = true,
+            DataCadastro = DateTime.UtcNow,
+            IdPerfil = PerfilIds.Cliente
+        };
+
+        // Armazena somente o hash da senha.
+        cliente.SenhaHash = _passwordHasher.HashPassword(
+            cliente,
+            senha
+        );
+
+        try
+        {
+            cliente.Id = await _repositorios.Usuario.InserirAsync(cliente);
+        }
+        catch (RegistroDuplicadoException)
+        {
+            // Trata a duplicidade garantida pelo UNIQUE do banco.
+            throw new BusinessRuleException(
+                BusinessErrors.EmailJaCadastrado
+            );
+        }
+
+        return cliente;
+    }
 }

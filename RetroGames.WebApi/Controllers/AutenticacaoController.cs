@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using RetroGames.Model.Constantes;
+using RetroGames.Model.Model;
 using RetroGames.Services;
 using RetroGames.WebApi.ApiModels.Requests;
 using RetroGames.WebApi.ApiModels.Responses;
@@ -47,33 +48,29 @@ public class AutenticacaoController : ControllerBase
             return Unauthorized(respostaErro);
         }
 
-        var identidade = usuario.CriarClaimsPrincipal();
+        await CriarSessaoAsync(usuario);
 
-        await HttpContext.SignInAsync(
-            CookieAuthenticationDefaults.AuthenticationScheme,
-            identidade
+        return Ok(CriarRespostaUsuario(usuario));
+    }
+
+    // POST: api/Autenticacao/cadastrar
+    [AllowAnonymous]
+    [HttpPost("cadastrar")]
+    public async Task<IActionResult> Cadastrar(
+        [FromBody] CadastrarClienteRequestApiModel request)
+    {
+        var cliente = await _autenticacaoService.CadastrarClienteAsync(
+            request.Nome,
+            request.Email,
+            request.Senha
         );
 
-        var resposta = new RetroGamesResponseApiModel<
-            UsuarioLogadoResponseApiModel>
-        {
-            ResponseCode = ResponseCodes.SUCESSO.Code,
+        // Inicia a sessão automaticamente após o cadastro.
+        await CriarSessaoAsync(cliente);
 
-            Data = new UsuarioLogadoResponseApiModel
-            {
-                Id = usuario.Id,
-                Nome = usuario.Nome,
-                Email = usuario.Email,
+        var resposta = CriarRespostaUsuario(cliente);
 
-                Perfil = usuario.IdPerfil == PerfilIds.Administrador
-                    ? Perfis.Administrador
-                    : Perfis.Cliente
-            },
-
-            ErrorMessage = null
-        };
-
-        return Ok(resposta);
+        return StatusCode(StatusCodes.Status201Created, resposta);
     }
 
     // POST: api/Autenticacao/logout
@@ -132,5 +129,39 @@ public class AutenticacaoController : ControllerBase
         };
 
         return Ok(resposta);
+    }
+
+    private async Task CriarSessaoAsync(Usuario usuario)
+    {
+        var identidade = usuario.CriarClaimsPrincipal();
+
+        await HttpContext.SignInAsync(
+            CookieAuthenticationDefaults.AuthenticationScheme,
+            identidade
+        );
+    }
+
+    private static RetroGamesResponseApiModel<
+        UsuarioLogadoResponseApiModel> CriarRespostaUsuario(
+            Usuario usuario)
+    {
+        return new RetroGamesResponseApiModel<
+            UsuarioLogadoResponseApiModel>
+        {
+            ResponseCode = ResponseCodes.SUCESSO.Code,
+
+            Data = new UsuarioLogadoResponseApiModel
+            {
+                Id = usuario.Id,
+                Nome = usuario.Nome,
+                Email = usuario.Email,
+
+                Perfil = usuario.IdPerfil == PerfilIds.Administrador
+                    ? Perfis.Administrador
+                    : Perfis.Cliente
+            },
+
+            ErrorMessage = null
+        };
     }
 }
