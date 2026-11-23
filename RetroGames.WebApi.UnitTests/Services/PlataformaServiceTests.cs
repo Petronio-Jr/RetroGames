@@ -170,7 +170,7 @@ public class PlataformaServiceTests
     }
 
     [Fact]
-    public async Task Inserir_NomeDuplicado_LancaNomeDuplicado()
+    public async Task Inserir_NomeJaCadastrado_LancaNomeDuplicadoENaoInsere()
     {
         // Arrange
         var plataforma = CriarPlataforma();
@@ -199,7 +199,7 @@ public class PlataformaServiceTests
     }
 
     [Fact]
-    public async Task Inserir_RegistroDuplicadoNoBanco_LancaNomeDuplicado()
+    public async Task Inserir_RepositoryLancaRegistroDuplicado_LancaNomeDuplicado()
     {
         // Arrange
         var plataforma = CriarPlataforma();
@@ -224,12 +224,47 @@ public class PlataformaServiceTests
             BusinessErrors.PlataformaNomeDuplicado.Codigo,
             excecao.Erro.Codigo
         );
+
+        _plataformaRepositoryMock.Verify(
+            r => r.InserirAsync(plataforma),
+            Times.Once
+        );
+    }
+
+    [Fact]
+    public async Task Inserir_NomeLivre_RetornaPlataformaComIdGerado()
+    {
+        // Arrange
+        var plataforma = CriarPlataforma();
+        var idGerado = 10;
+
+        _plataformaRepositoryMock
+            .Setup(r => r.ExisteComNomeAsync(plataforma.Nome, null))
+            .ReturnsAsync(false);
+
+        _plataformaRepositoryMock
+            .Setup(r => r.InserirAsync(plataforma))
+            .ReturnsAsync(idGerado);
+
+        var service = CriarService();
+
+        // Act
+        var resultado = await service.InserirAsync(plataforma);
+
+        // Assert
+        Assert.Equal(idGerado, resultado.Id);
+        Assert.Same(plataforma, resultado);
+
+        _plataformaRepositoryMock.Verify(
+            r => r.InserirAsync(plataforma),
+            Times.Once
+        );
     }
 
     // ALTERAR
 
     [Fact]
-    public async Task Alterar_PlataformaValida_AlteraPlataforma()
+    public async Task Alterar_MantendoProprioNome_RepositoryGravaAlteracao()
     {
         // Arrange
         var plataforma = CriarPlataforma();
@@ -251,6 +286,13 @@ public class PlataformaServiceTests
 
         // Assert
         Assert.Same(plataforma, resultado);
+
+        _plataformaRepositoryMock.Verify(
+            r => r.ExisteComNomeAsync(
+                plataforma.Nome,
+                plataforma.Id),
+            Times.Once
+        );
 
         _plataformaRepositoryMock.Verify(
             r => r.AlterarAsync(plataforma),
@@ -354,6 +396,11 @@ public class PlataformaServiceTests
             BusinessErrors.PlataformaNomeDuplicado.Codigo,
             excecao.Erro.Codigo
         );
+
+        _plataformaRepositoryMock.Verify(
+            r => r.AlterarAsync(plataforma),
+            Times.Once
+        );
     }
 
     // EXCLUIR
@@ -388,7 +435,7 @@ public class PlataformaServiceTests
     }
 
     [Fact]
-    public async Task Excluir_PlataformaComJogos_LancaPossuiJogos()
+    public async Task Excluir_PlataformaComJogos_LancaPossuiJogosENaoExclui()
     {
         // Arrange
         var plataforma = CriarPlataforma();
