@@ -1,14 +1,32 @@
 
-import { Link, NavLink, Outlet } from 'react-router-dom'
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+import useAutenticacao from '../hooks/useAutenticacao'
 
 function Layout() {
+  const {
+    usuario,
+    carregando,
+    estaAutenticado,
+    ehAdministrador,
+    sair,
+  } = useAutenticacao()
+
+  const navegar = useNavigate()
+
+  async function lidarComSaida() {
+    try {
+      await sair()
+    } finally {
+      navegar('/')
+    }
+  }
+
   return (
     <>
       {/* Barra de navegação */}
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container">
 
-          {/* Marca */}
           <Link className="navbar-brand fw-bold" to="/">
             RetroGames
           </Link>
@@ -28,6 +46,7 @@ function Layout() {
 
           {/* Itens da navegação */}
           <div className="collapse navbar-collapse" id="menuNavegacao">
+
             <ul className="navbar-nav me-auto">
               <li className="nav-item">
                 <NavLink
@@ -40,9 +59,67 @@ function Layout() {
                   Catálogo
                 </NavLink>
               </li>
-            </ul>
-          </div>
 
+              {/* Menu exclusivo do administrador */}
+              {ehAdministrador && (
+                <li className="nav-item dropdown">
+                  <button
+                    className="nav-link dropdown-toggle btn btn-link"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                  >
+                    Administração
+                  </button>
+
+                  <ul className="dropdown-menu">
+                    <li>
+                      <Link className="dropdown-item" to="/admin/jogos">
+                        Jogos
+                      </Link>
+                    </li>
+
+                    <li>
+                      <Link className="dropdown-item" to="/admin/plataformas">
+                        Plataformas
+                      </Link>
+                    </li>
+                  </ul>
+                </li>
+              )}
+            </ul>
+
+            {/* Área do usuário */}
+            <ul className="navbar-nav">
+              {!carregando && (
+                estaAutenticado ? (
+                  <>
+                    <li className="nav-item">
+                      <span className="navbar-text me-3">
+                        Olá, {usuario.nome}
+                      </span>
+                    </li>
+
+                    <li className="nav-item">
+                      <button
+                        className="btn btn-outline-light btn-sm"
+                        onClick={lidarComSaida}
+                      >
+                        Sair
+                      </button>
+                    </li>
+                  </>
+                ) : (
+                  <li className="nav-item">
+                    <NavLink className="nav-link" to="/login">
+                      Entrar
+                    </NavLink>
+                  </li>
+                )
+              )}
+            </ul>
+
+          </div>
         </div>
       </nav>
 
