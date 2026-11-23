@@ -10,7 +10,7 @@ import NaoEncontrada from './pages/NaoEncontrada'
 
 import Jogos from './pages/Admin/Jogos'
 import FormularioJogo from './pages/Admin/FormularioJogo'
-import Plataformas from './pages/Admin/Plataformas'
+import Plataforma from './pages/Auxiliares/Plataforma'
 
 function App() {
   return (
@@ -29,7 +29,7 @@ function App() {
           <Route path="jogos" element={<Jogos />} />
           <Route path="jogos/novo" element={<FormularioJogo />} />
           <Route path="jogos/:id/editar" element={<FormularioJogo />} />
-          <Route path="plataformas" element={<Plataformas />} />
+          <Route path="plataformas" element={<Plataforma />} />
         </Route>
 
         <Route path="*" element={<NaoEncontrada />} />

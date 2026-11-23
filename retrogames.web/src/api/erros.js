@@ -8,3 +8,19 @@ export function obterMensagemErro(erro) {
     'Ocorreu um erro inesperado.'
   )
 }
+
+export function obterErrosDosCampos(erro) {
+  const resposta = erro.response?.data
+
+  if (resposta?.responseCode !== 3 || !resposta.data) {
+    return {}
+  }
+
+  const erros = {}
+
+  for (const campo in resposta.data) {
+    erros[campo] = resposta.data[campo][0]
+  }
+
+  return erros
+}
