@@ -53,6 +53,7 @@ export const condicaoJogoApi = {
   },
 }
 
+
 export const jogoApi = {
   async listar(filtros = {}) {
     const resposta = await api.get('/Jogo', {
@@ -66,4 +67,20 @@ export const jogoApi = {
     const resposta = await api.get(`/Jogo/${id}`)
     return resposta.data.data
   },
+
+  async inserir(dados) {
+    const resposta = await api.post('/Jogo', dados)
+    return resposta.data.data
+  },
+
+  async alterar(id, dados) {
+    const resposta = await api.put(`/Jogo/${id}`, dados)
+    return resposta.data.data
+  },
+
+  async desativar(id) {
+    const resposta = await api.delete(`/Jogo/${id}`)
+    return resposta.data.data
+  },
+
 }

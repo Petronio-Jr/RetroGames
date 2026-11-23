@@ -222,6 +222,7 @@ public class JogoRepository : RepositoryBase, IJogoRepository
                 nu_ano_lancamento = @anoLancamento,
                 vl_preco = @preco,
                 qt_estoque = @estoque,
+                st_ativo = @ativo,
                 co_plataforma = @plataformaId,
                 co_condicao_jogo = @condicaoJogoId
             WHERE co_seq_jogo = @id;
