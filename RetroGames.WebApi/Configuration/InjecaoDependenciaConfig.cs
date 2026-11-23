@@ -49,6 +49,7 @@ public static class InjecaoDependenciaConfig
         services.AddScoped<ICondicaoJogoService, CondicaoJogoService>();
         services.AddScoped<IAutenticacaoService, AutenticacaoService>();
         services.AddScoped<IPasswordHasher<Usuario>, PasswordHasher<Usuario>>();
+        services.AddScoped<IPedidoService, PedidoService>();
 
         return services;
     }
