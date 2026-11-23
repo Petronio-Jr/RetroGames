@@ -2,127 +2,144 @@ using Moq;
 using RetroGames.Model.Model;
 using RetroGames.Repository;
 using RetroGames.Services;
-using RetroGames.Services.ServiceModels;
 using Xunit;
 
 namespace RetroGames.WebApi.UnitTests.Services;
 
-public class JogoServiceTests
+public class PlataformaServiceTests
 {
-    private readonly Mock<IJogoRepository> _jogoRepositoryMock;
     private readonly Mock<IPlataformaRepository> _plataformaRepositoryMock;
-    private readonly Mock<ICondicaoJogoRepository> _condicaoJogoRepositoryMock;
-    private readonly Mock<IGeneroRepository> _generoRepositoryMock;
-    private readonly Mock<IJogoGeneroRepository> _jogoGeneroRepositoryMock;
+    private readonly Mock<IJogoRepository> _jogoRepositoryMock;
     private readonly Mock<IRepositorySet> _repositorioMock;
-    private readonly Mock<IUsuarioAtualService> _usuarioAtualServiceMock;
 
-    public JogoServiceTests()
+    public PlataformaServiceTests()
     {
-        _jogoRepositoryMock = new Mock<IJogoRepository>();
         _plataformaRepositoryMock = new Mock<IPlataformaRepository>();
-        _condicaoJogoRepositoryMock = new Mock<ICondicaoJogoRepository>();
-        _generoRepositoryMock = new Mock<IGeneroRepository>();
-        _jogoGeneroRepositoryMock = new Mock<IJogoGeneroRepository>();
+        _jogoRepositoryMock = new Mock<IJogoRepository>();
         _repositorioMock = new Mock<IRepositorySet>();
-        _usuarioAtualServiceMock = new Mock<IUsuarioAtualService>();
-
-        _repositorioMock
-            .SetupGet(r => r.Jogo)
-            .Returns(_jogoRepositoryMock.Object);
 
         _repositorioMock
             .SetupGet(r => r.Plataforma)
             .Returns(_plataformaRepositoryMock.Object);
 
         _repositorioMock
-            .SetupGet(r => r.CondicaoJogo)
-            .Returns(_condicaoJogoRepositoryMock.Object);
-
-        _repositorioMock
-            .SetupGet(r => r.Genero)
-            .Returns(_generoRepositoryMock.Object);
-
-        _repositorioMock
-            .SetupGet(r => r.JogoGenero)
-            .Returns(_jogoGeneroRepositoryMock.Object);
-
-        _usuarioAtualServiceMock
-            .SetupGet(u => u.EhAdministrador)
-            .Returns(false);
+            .SetupGet(r => r.Jogo)
+            .Returns(_jogoRepositoryMock.Object);
     }
 
-    private JogoService CriarService()
+    private PlataformaService CriarService()
     {
-        return new JogoService(
-            _repositorioMock.Object,
-            _usuarioAtualServiceMock.Object
-        );
+        return new PlataformaService(_repositorioMock.Object);
     }
 
-    private Jogo CriarJogo(int id = 1)
-    {
-        return new Jogo
-        {
-            Id = id,
-            Nome = "God of War",
-            Descricao = "Jogo de ação e aventura",
-            AnoLancamento = 2018,
-            Preco = 199.90m,
-            Estoque = 10,
-            Ativo = true,
-            IdPlataforma = 1,
-            IdCondicaoJogo = 1
-        };
-    }
-
-    private Plataforma CriarPlataforma()
+    private Plataforma CriarPlataforma(int id = 1)
     {
         return new Plataforma
         {
-            Id = 1,
-            Nome = "PlayStation 4",
-            Fabricante = "Sony",
-            AnoLancamento = 2013
-        };
-    }
-
-    private CondicaoJogo CriarCondicao()
-    {
-        return new CondicaoJogo
-        {
-            Id = 1,
-            Descricao = "Novo"
-        };
-    }
-
-    private Genero CriarGenero(int id = 1)
-    {
-        return new Genero
-        {
             Id = id,
-            Nome = "Ação"
+            Nome = "PlayStation 5",
+            Fabricante = "Sony",
+            AnoLancamento = 2020
         };
     }
-
-    // INSERIR
 
     [Fact]
-    public async Task Inserir_PlataformaInexistente_LancaPlataformaNaoEncontradaENaoGrava()
+    public async Task BuscarPorId_IdInexistente_LancaPlataformaNaoEncontrada()
     {
         // Arrange
-        var jogo = CriarJogo();
-        var generosIds = new List<int> { 1 };
-
         _plataformaRepositoryMock
-            .Setup(r => r.BuscarPorIdAsync(jogo.IdPlataforma))
+            .Setup(r => r.BuscarPorIdAsync(999))
             .ReturnsAsync((Plataforma?)null);
 
         var service = CriarService();
 
         // Act
         var excecao = await Assert.ThrowsAsync<BusinessRuleException>(
-            () => service.InserirAsync(jogo, generosIds)
+            () => service.BuscarPorIdAsync(999)
+        );
+
+        // Assert
+        Assert.Equal(
+            BusinessErrors.PlataformaNaoEncontrada.Codigo,
+            excecao.Erro.Codigo
+        );
+    }
+
+    [Fact]
+    public async Task Inserir_NomeDuplicado_LancaErroENaoGrava()
+    {
+        // Arrange
+        var plataforma = CriarPlataforma();
+
+        _plataformaRepositoryMock
+            .Setup(r => r.ExisteComNomeAsync(plataforma.Nome, null))
+            .ReturnsAsync(true);
+
+        var service = CriarService();
+
+        // Act
+        var excecao = await Assert.ThrowsAsync<BusinessRuleException>(
+            () => service.InserirAsync(plataforma)
+        );
+
+        // Assert
+        Assert.Equal(
+            BusinessErrors.PlataformaNomeDuplicado.Codigo,
+            excecao.Erro.Codigo
+        );
+
+        _plataformaRepositoryMock.Verify(
+            r => r.InserirAsync(It.IsAny<Plataforma>()),
+            Times.Never
+        );
+    }
+
+    [Fact]
+    public async Task Inserir_NomeValido_GravaPlataforma()
+    {
+        // Arrange
+        var plataforma = CriarPlataforma();
+
+        plataforma.Nome = "  PlayStation 5  ";
+
+        _plataformaRepositoryMock
+            .Setup(r => r.ExisteComNomeAsync("PlayStation 5", null))
+            .ReturnsAsync(false);
+
+        _plataformaRepositoryMock
+            .Setup(r => r.InserirAsync(plataforma))
+            .ReturnsAsync(10);
+
+        var service = CriarService();
+
+        // Act
+        var resultado = await service.InserirAsync(plataforma);
+
+        // Assert
+        Assert.Equal(10, resultado.Id);
+        Assert.Equal("PlayStation 5", resultado.Nome);
+
+        _plataformaRepositoryMock.Verify(
+            r => r.InserirAsync(plataforma),
+            Times.Once
+        );
+    }
+
+    [Fact]
+    public async Task Alterar_PlataformaInexistente_LancaPlataformaNaoEncontrada()
+    {
+        // Arrange
+        var plataforma = CriarPlataforma(999);
+
+        _plataformaRepositoryMock
+            .Setup(r => r.BuscarPorIdAsync(999))
+            .ReturnsAsync((Plataforma?)null);
+
+        var service = CriarService();
+
+        // Act
+        var excecao = await Assert.ThrowsAsync<BusinessRuleException>(
+            () => service.AlterarAsync(plataforma)
         );
 
         // Assert
@@ -131,324 +148,103 @@ public class JogoServiceTests
             excecao.Erro.Codigo
         );
 
-        _jogoRepositoryMock.Verify(
-            r => r.InserirAsync(It.IsAny<Jogo>()),
+        _plataformaRepositoryMock.Verify(
+            r => r.AlterarAsync(It.IsAny<Plataforma>()),
             Times.Never
         );
     }
 
     [Fact]
-    public async Task Inserir_CondicaoInexistente_LancaCondicaoNaoEncontradaENaoGrava()
+    public async Task Alterar_NomeDuplicado_LancaErroENaoAltera()
     {
         // Arrange
-        var jogo = CriarJogo();
-        var generosIds = new List<int> { 1 };
+        var plataforma = CriarPlataforma();
 
         _plataformaRepositoryMock
-            .Setup(r => r.BuscarPorIdAsync(jogo.IdPlataforma))
+            .Setup(r => r.BuscarPorIdAsync(plataforma.Id))
             .ReturnsAsync(CriarPlataforma());
 
-        _condicaoJogoRepositoryMock
-            .Setup(r => r.ListarAsync())
-            .ReturnsAsync(new List<CondicaoJogo>());
+        _plataformaRepositoryMock
+            .Setup(r => r.ExisteComNomeAsync(
+                plataforma.Nome,
+                plataforma.Id))
+            .ReturnsAsync(true);
 
         var service = CriarService();
 
         // Act
         var excecao = await Assert.ThrowsAsync<BusinessRuleException>(
-            () => service.InserirAsync(jogo, generosIds)
+            () => service.AlterarAsync(plataforma)
         );
 
         // Assert
         Assert.Equal(
-            BusinessErrors.CondicaoNaoEncontrada.Codigo,
+            BusinessErrors.PlataformaNomeDuplicado.Codigo,
             excecao.Erro.Codigo
         );
 
-        _jogoRepositoryMock.Verify(
-            r => r.InserirAsync(It.IsAny<Jogo>()),
+        _plataformaRepositoryMock.Verify(
+            r => r.AlterarAsync(It.IsAny<Plataforma>()),
             Times.Never
         );
     }
 
     [Fact]
-    public async Task Inserir_GeneroInexistente_LancaGeneroNaoEncontradoENaoGrava()
+    public async Task Excluir_PlataformaComJogos_LancaErroENaoExclui()
     {
         // Arrange
-        var jogo = CriarJogo();
-        var generosIds = new List<int> { 999 };
+        var plataforma = CriarPlataforma();
 
         _plataformaRepositoryMock
-            .Setup(r => r.BuscarPorIdAsync(jogo.IdPlataforma))
-            .ReturnsAsync(CriarPlataforma());
+            .Setup(r => r.BuscarPorIdAsync(plataforma.Id))
+            .ReturnsAsync(plataforma);
 
-        _condicaoJogoRepositoryMock
-            .Setup(r => r.ListarAsync())
-            .ReturnsAsync(new List<CondicaoJogo>
-            {
-                CriarCondicao()
-            });
-
-        _generoRepositoryMock
-            .Setup(r => r.ListarAsync())
-            .ReturnsAsync(new List<Genero>
-            {
-                CriarGenero(1)
-            });
+        _jogoRepositoryMock
+            .Setup(r => r.PossuiJogosAsync(plataforma.Id))
+            .ReturnsAsync(true);
 
         var service = CriarService();
 
         // Act
         var excecao = await Assert.ThrowsAsync<BusinessRuleException>(
-            () => service.InserirAsync(jogo, generosIds)
+            () => service.ExcluirAsync(plataforma.Id)
         );
 
         // Assert
         Assert.Equal(
-            BusinessErrors.GeneroNaoEncontrado.Codigo,
+            BusinessErrors.PlataformaPossuiJogos.Codigo,
             excecao.Erro.Codigo
         );
 
-        _jogoRepositoryMock.Verify(
-            r => r.InserirAsync(It.IsAny<Jogo>()),
+        _plataformaRepositoryMock.Verify(
+            r => r.ExcluirAsync(plataforma.Id),
             Times.Never
         );
     }
 
-    // LISTAR
-
     [Fact]
-    public async Task Listar_FiltrandoPorGenero_EnviaSomenteIdsDosJogosDoGenero()
+    public async Task Excluir_PlataformaSemJogos_Exclui()
     {
         // Arrange
-        var vinculos = new List<JogoGenero>
-        {
-            new JogoGenero { IdJogo = 1, IdGenero = 2 },
-            new JogoGenero { IdJogo = 2, IdGenero = 1 },
-            new JogoGenero { IdJogo = 3, IdGenero = 2 },
-            new JogoGenero { IdJogo = 1, IdGenero = 2 }
-        };
-
-        _jogoGeneroRepositoryMock
-            .Setup(r => r.ListarAsync())
-            .ReturnsAsync(vinculos);
-
-        _jogoRepositoryMock
-            .Setup(r => r.ListarAsync(
-                null,
-                null,
-                It.IsAny<List<int>?>(),
-                false,
-                1,
-                10))
-            .ReturnsAsync((new List<Jogo>(), 0));
-
-        var service = CriarService();
-
-        // Act
-        await service.ListarAsync(
-            null,
-            null,
-            2,
-            false,
-            1,
-            10
-        );
-
-        // Assert
-        _jogoRepositoryMock.Verify(
-            r => r.ListarAsync(
-                null,
-                null,
-                It.Is<List<int>?>(
-                    ids => ids != null &&
-                           ids.Count == 2 &&
-                           ids.Contains(1) &&
-                           ids.Contains(3)
-                ),
-                false,
-                1,
-                10
-            ),
-            Times.Once
-        );
-    }
-
-    [Fact]
-    public async Task Listar_SemGenero_NaoConsultaVinculosENaoRestringeIds()
-    {
-        // Arrange
-        _jogoRepositoryMock
-            .Setup(r => r.ListarAsync(
-                null,
-                null,
-                null,
-                false,
-                1,
-                10))
-            .ReturnsAsync((new List<Jogo>(), 0));
-
-        var service = CriarService();
-
-        // Act
-        await service.ListarAsync(
-            null,
-            null,
-            null,
-            false,
-            1,
-            10
-        );
-
-        // Assert
-        _jogoGeneroRepositoryMock.Verify(
-            r => r.ListarAsync(),
-            Times.Never
-        );
-
-        _jogoRepositoryMock.Verify(
-            r => r.ListarAsync(
-                null,
-                null,
-                null,
-                false,
-                1,
-                10
-            ),
-            Times.Once
-        );
-    }
-
-    [Fact]
-    public async Task Listar_ComJogosNaPagina_RetornaNomeDaPlataformaEDescricaoDaCondicao()
-    {
-        // Arrange
-        var jogo = CriarJogo();
-
-        _jogoRepositoryMock
-            .Setup(r => r.ListarAsync(
-                null,
-                null,
-                null,
-                false,
-                1,
-                10))
-            .ReturnsAsync((new List<Jogo> { jogo }, 1));
+        var plataforma = CriarPlataforma();
 
         _plataformaRepositoryMock
-            .Setup(r => r.ListarAsync())
-            .ReturnsAsync(new List<Plataforma>
-            {
-                CriarPlataforma()
-            });
-
-        _condicaoJogoRepositoryMock
-            .Setup(r => r.ListarAsync())
-            .ReturnsAsync(new List<CondicaoJogo>
-            {
-                CriarCondicao()
-            });
-
-        _generoRepositoryMock
-            .Setup(r => r.ListarAsync())
-            .ReturnsAsync(new List<Genero>
-            {
-                CriarGenero()
-            });
-
-        _jogoGeneroRepositoryMock
-            .Setup(r => r.ListarPorJogosAsync(
-                It.Is<List<int>>(ids => ids.Contains(jogo.Id))))
-            .ReturnsAsync(new List<JogoGenero>
-            {
-                new JogoGenero
-                {
-                    IdJogo = jogo.Id,
-                    IdGenero = 1
-                }
-            });
-
-        var service = CriarService();
-
-        // Act
-        var resultado = await service.ListarAsync(
-            null,
-            null,
-            null,
-            false,
-            1,
-            10
-        );
-
-        // Assert
-        Assert.Single(resultado.Jogos);
-        Assert.Equal(1, resultado.Total);
-
-        Assert.Equal(
-            "PlayStation 4",
-            resultado.Jogos[0].NomePlataforma
-        );
-
-        Assert.Equal(
-            "Novo",
-            resultado.Jogos[0].DescricaoCondicao
-        );
-    }
-
-    // BUSCAR POR ID
-
-    [Fact]
-    public async Task BuscarPorId_IdInexistente_LancaJogoNaoEncontrado()
-    {
-        // Arrange
-        var id = 999;
+            .Setup(r => r.BuscarPorIdAsync(plataforma.Id))
+            .ReturnsAsync(plataforma);
 
         _jogoRepositoryMock
-            .Setup(r => r.BuscarPorIdAsync(id))
-            .ReturnsAsync((Jogo?)null);
+            .Setup(r => r.PossuiJogosAsync(plataforma.Id))
+            .ReturnsAsync(false);
 
         var service = CriarService();
 
         // Act
-        var excecao = await Assert.ThrowsAsync<BusinessRuleException>(
-            () => service.BuscarPorIdAsync(id)
-        );
+        await service.ExcluirAsync(plataforma.Id);
 
         // Assert
-        Assert.Equal(
-            BusinessErrors.JogoNaoEncontrado.Codigo,
-            excecao.Erro.Codigo
-        );
-    }
-
-    // DESATIVAR
-
-    [Fact]
-    public async Task Desativar_IdInexistente_LancaJogoNaoEncontradoENaoDesativa()
-    {
-        // Arrange
-        var id = 999;
-
-        _jogoRepositoryMock
-            .Setup(r => r.BuscarPorIdAsync(id))
-            .ReturnsAsync((Jogo?)null);
-
-        var service = CriarService();
-
-        // Act
-        var excecao = await Assert.ThrowsAsync<BusinessRuleException>(
-            () => service.DesativarAsync(id)
-        );
-
-        // Assert
-        Assert.Equal(
-            BusinessErrors.JogoNaoEncontrado.Codigo,
-            excecao.Erro.Codigo
-        );
-
-        _jogoRepositoryMock.Verify(
-            r => r.DesativarAsync(id),
-            Times.Never
+        _plataformaRepositoryMock.Verify(
+            r => r.ExcluirAsync(plataforma.Id),
+            Times.Once
         );
     }
 }
