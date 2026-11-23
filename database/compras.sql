@@ -1,7 +1,5 @@
 -- RetroGames
--- Script 003: estrutura do módulo de compras
--- Execute depois dos scripts de estrutura e dados iniciais.
--- Não altere scripts anteriores que já tenham sido executados.
+-- Estrutura do módulo de compras
 
 USE retrogames;
 

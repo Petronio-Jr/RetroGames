@@ -281,4 +281,27 @@ public class JogoRepository : RepositoryBase, IJogoRepository
             IdCondicaoJogo = reader.GetInt32(reader.GetOrdinal("co_condicao_jogo"))
         };
     }
+
+    public async Task<bool> BaixarEstoqueAsync(
+    int idJogo,
+    int quantidade)
+    {
+        const string sql = """
+            UPDATE tb_jogo
+            SET qt_estoque = qt_estoque - @quantidade
+            WHERE co_seq_jogo = @idJogo
+            AND st_ativo = 1
+            AND qt_estoque >= @quantidade;
+            """;
+
+        await using var conexao = await AbrirConexaoAsync();
+        await using var comando = CriarComando(conexao, sql);
+
+        AdicionarParametro(comando, "@idJogo", idJogo);
+        AdicionarParametro(comando, "@quantidade", quantidade);
+
+        int linhasAlteradas = await ExecutarGravacaoAsync(comando);
+
+        return linhasAlteradas > 0;
+    }
 }
