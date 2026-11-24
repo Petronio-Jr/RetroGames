@@ -8,12 +8,15 @@ import './index.css'
 
 import App from './App'
 import AutenticacaoProvider from './contexts/AutenticacaoProvider'
+import CarrinhoProvider from './contexts/CarrinhoProvider'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <AutenticacaoProvider>
-        <App />
+        <CarrinhoProvider>
+          <App />
+        </CarrinhoProvider>
       </AutenticacaoProvider>
     </BrowserRouter>
   </React.StrictMode>

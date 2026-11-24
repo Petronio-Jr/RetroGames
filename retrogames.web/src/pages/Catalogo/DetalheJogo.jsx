@@ -6,6 +6,7 @@ import { jogoApi } from '../../api/servicos'
 import { obterMensagemErro } from '../../api/erros'
 import { formatarPreco } from '../../lib/formato'
 import { Carregando, MensagemErro } from '../../components/MensagensEstado'
+import useCarrinho from '../../hooks/useCarrinho'
 
 function DetalheJogo() {
   const { id } = useParams()
@@ -13,6 +14,9 @@ function DetalheJogo() {
   const [jogo, setJogo] = useState(null)
   const [carregando, setCarregando] = useState(true)
   const [erro, setErro] = useState('')
+  const [mensagemCarrinho, setMensagemCarrinho] = useState('')
+
+  const { adicionarItem } = useCarrinho()
 
   useEffect(() => {
     async function carregarJogo() {
@@ -54,6 +58,16 @@ function DetalheJogo() {
 
   if (!jogo) {
     return null
+  }
+
+  function lidarComAdicao() {
+    const adicionado = adicionarItem(jogo)
+
+    setMensagemCarrinho(
+      adicionado
+        ? 'Jogo adicionado ao carrinho!'
+        : 'Não foi possível adicionar mais unidades.'
+    )
   }
 
   return (
@@ -121,6 +135,26 @@ function DetalheJogo() {
                 <p className="text-danger fw-bold mb-0">Esgotado</p>
               )}
             </div>
+          </div>
+
+          <hr />
+
+          <div>
+            <button
+              className="btn btn-success w-100"
+              disabled={jogo.estoque <= 0}
+              onClick={lidarComAdicao}
+            >
+              {jogo.estoque > 0
+                ? 'Adicionar ao carrinho'
+                : 'Produto esgotado'}
+            </button>
+
+            {mensagemCarrinho && (
+              <p className="text-center mt-2 mb-0">
+                {mensagemCarrinho}
+              </p>
+            )}
           </div>
         </div>
       </div>
