@@ -1,6 +1,5 @@
-
 import { useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import useAutenticacao from '../../hooks/useAutenticacao'
 import { obterMensagemErro } from '../../api/erros'
 
@@ -94,6 +93,13 @@ function Login() {
                 {enviando ? 'Entrando...' : 'Entrar'}
               </button>
             </form>
+
+            <hr />
+
+            <p className="text-center mb-0">
+              Ainda não possui uma conta?{' '}
+              <Link to="/cadastro">Cadastre-se</Link>
+            </p>
 
           </div>
         </div>

@@ -16,7 +16,7 @@ function DetalheJogo() {
   const [erro, setErro] = useState('')
   const [mensagemCarrinho, setMensagemCarrinho] = useState('')
 
-  const { adicionarItem } = useCarrinho()
+  const { adicionarItem, itens } = useCarrinho()
 
   useEffect(() => {
     async function carregarJogo() {
@@ -61,12 +61,35 @@ function DetalheJogo() {
   }
 
   function lidarComAdicao() {
+    const itemExistente = itens.find(
+      item => item.id === jogo.id
+    )
+
+    const quantidadeAtual = itemExistente
+      ? itemExistente.quantidade
+      : 0
+
+    if (jogo.estoque <= 0) {
+      setMensagemCarrinho('Este jogo está esgotado.')
+      return
+    }
+
+    if (
+      quantidadeAtual >= 10 ||
+      quantidadeAtual >= jogo.estoque
+    ) {
+      setMensagemCarrinho(
+        `Você já atingiu o limite de ${Math.min(10, jogo.estoque)} unidade(s) deste jogo.`
+      )
+      return
+    }
+
     const adicionado = adicionarItem(jogo)
 
     setMensagemCarrinho(
       adicionado
         ? 'Jogo adicionado ao carrinho!'
-        : 'Não foi possível adicionar mais unidades.'
+        : 'Não foi possível adicionar o jogo.'
     )
   }
 
@@ -104,7 +127,9 @@ function DetalheJogo() {
               <strong>Gêneros:</strong>
               <p>
                 {jogo.generos?.length
-                  ? jogo.generos.join(', ')
+                  ? jogo.generos
+                      .map(genero => genero.nome)
+                      .join(', ')
                   : 'Não informado'}
               </p>
             </div>

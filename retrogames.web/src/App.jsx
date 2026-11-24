@@ -11,6 +11,7 @@ import NaoEncontrada from './pages/NaoEncontrada'
 import Jogos from './pages/Admin/Jogos'
 import FormularioJogo from './pages/Admin/FormularioJogo'
 import Plataforma from './pages/Auxiliares/Plataforma'
+import Cadastro from './pages/Cadastro/Cadastro'
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <Route path="/" element={<Catalogo />} />
         <Route path="/jogos/:id" element={<DetalheJogo />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/cadastro" element={<Cadastro />} />
 
         {/* Rotas administrativas */}
         <Route

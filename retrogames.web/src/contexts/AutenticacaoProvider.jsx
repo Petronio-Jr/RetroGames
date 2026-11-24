@@ -37,6 +37,11 @@ function AutenticacaoProvider({ children }) {
     await buscarUsuarioAtual()
   }
 
+  async function cadastrar(nome, email, senha) {
+    await autenticacaoApi.cadastrar({ nome, email, senha })
+    await buscarUsuarioAtual()
+  }
+
   async function sair() {
     try {
       await autenticacaoApi.sair()
@@ -54,6 +59,7 @@ function AutenticacaoProvider({ children }) {
     estaAutenticado,
     ehAdministrador,
     entrar,
+    cadastrar,
     sair,
   }
 

@@ -6,6 +6,11 @@ export const autenticacaoApi = {
     return resposta.data.data
   },
 
+  async cadastrar(dados) {
+    const resposta = await api.post('/Autenticacao/cadastrar', dados)
+    return resposta.data.data
+  },
+
   async sair() {
     const resposta = await api.post('/Autenticacao/logout')
     return resposta.data.data
@@ -83,4 +88,17 @@ export const jogoApi = {
     return resposta.data.data
   },
 
+}
+
+export const pedidoApi = {
+  async finalizar(itens) {
+    const resposta = await api.post('/Pedido', {
+      itens: itens.map(item => ({
+        idJogo: item.id,
+        quantidade: item.quantidade,
+      })),
+    })
+
+    return resposta.data.data
+  },
 }

@@ -11,6 +11,8 @@ function Layout() {
     sair,
   } = useAutenticacao()
 
+  const ehCliente = usuario?.perfil === 'Cliente'
+
   const navegar = useNavigate()
 
   async function lidarComSaida() {
@@ -59,6 +61,33 @@ function Layout() {
                   Catálogo
                 </NavLink>
               </li>
+
+              {/* Menu exclusivo do cliente */}
+              {ehCliente && (
+                <>
+                  <li className="nav-item">
+                    <NavLink
+                      className={({ isActive }) =>
+                        `nav-link ${isActive ? 'active' : ''}`
+                      }
+                      to="/carrinho"
+                    >
+                      Carrinho
+                    </NavLink>
+                  </li>
+
+                  <li className="nav-item">
+                    <NavLink
+                      className={({ isActive }) =>
+                        `nav-link ${isActive ? 'active' : ''}`
+                      }
+                      to="/meus-pedidos"
+                    >
+                      Meus pedidos
+                    </NavLink>
+                  </li>
+                </>
+              )}
 
               {/* Menu exclusivo do administrador */}
               {ehAdministrador && (
