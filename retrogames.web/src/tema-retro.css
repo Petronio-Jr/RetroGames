@@ -1,0 +1,750 @@
+/* ==========================================================================
+   RetroGames — tema visual "sala de jogos retrô"
+   --------------------------------------------------------------------------
+   Arquivo NOVO. Não altera nenhum componente nem página existente: ele só
+   redefine as variáveis do Bootstrap 5.3 e estiliza as classes que o projeto
+   já usa (navbar, card, btn, badge, form, table, pagination, alert...).
+
+   Como ativar (uma única linha, em src/main.jsx, DEPOIS do index.css):
+       import './tema-retro.css'
+
+   Como desativar: remova essa linha. O site volta ao visual anterior.
+
+   Paleta inspirada nas imagens de referência:
+   - fundo escuro com brilho âmbar de CRT (primeira imagem)
+   - cores dos botões do Super Nintendo: vermelho, amarelo, verde, azul
+   - cinza de cartucho / Game Boy e o LCD verde (terceira imagem)
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Space+Grotesk:wght@400;500;700&family=VT323&display=swap');
+
+/* --------------------------------------------------------------------------
+   1. Variáveis
+   -------------------------------------------------------------------------- */
+:root {
+  /* Paleta do tema */
+  --rg-bg: #120f1a;
+  --rg-bg-deep: #0b0911;
+  --rg-surface: #1c1727;
+  --rg-surface-2: #261f35;
+  --rg-line: #3a2f52;
+  --rg-text: #efe9ff;
+  --rg-muted: #b3a9cc;
+
+  --rg-amber: #ffb000;
+  --rg-amber-soft: #ffd166;
+  --rg-red: #d02a35;
+  --rg-red-edge: #8e1c25;
+  --rg-red-dark: #7d1219;
+  --rg-yellow: #f7c948;
+  --rg-green: #39c46a;
+  --rg-blue: #3a6fe0;
+
+  --rg-lcd-bg: #0f380f;
+  --rg-lcd-fg: #9bbc0f;
+
+  --rg-font-pixel: 'Press Start 2P', ui-monospace, 'Courier New', monospace;
+  --rg-font-lcd: 'VT323', ui-monospace, 'Courier New', monospace;
+  --rg-font-body: 'Space Grotesk', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Faixa com as 4 cores dos botões do Super Nintendo */
+  --rg-stripe: linear-gradient(
+    90deg,
+    var(--rg-red) 0 25%,
+    var(--rg-yellow) 25% 50%,
+    var(--rg-green) 50% 75%,
+    var(--rg-blue) 75% 100%
+  );
+
+  /* Sobrescritas do Bootstrap */
+  --bs-body-font-family: var(--rg-font-body);
+  --bs-body-color: var(--rg-text);
+  --bs-body-color-rgb: 239, 233, 255;
+  --bs-body-bg: var(--rg-bg);
+  --bs-body-bg-rgb: 18, 15, 26;
+  --bs-heading-color: var(--rg-text);
+  --bs-secondary-color: var(--rg-muted); /* .text-muted */
+  --bs-tertiary-bg: var(--rg-surface-2);
+  --bs-border-color: var(--rg-line);
+
+  --bs-primary-rgb: 255, 176, 0;
+  --bs-secondary-rgb: 118, 108, 148;
+  --bs-success-rgb: 57, 196, 106;
+  --bs-danger-rgb: 229, 72, 77;
+  --bs-warning-rgb: 247, 201, 72;
+  --bs-dark-rgb: 11, 9, 17; /* .bg-dark (navbar e rodapé) */
+
+  --bs-link-color: var(--rg-amber);
+  --bs-link-color-rgb: 255, 176, 0;
+  --bs-link-hover-color: var(--rg-amber-soft);
+  --bs-link-hover-color-rgb: 255, 209, 102;
+
+  --bs-box-shadow-sm: 0 2px 0 rgba(0, 0, 0, 0.45), 0 10px 28px rgba(0, 0, 0, 0.35);
+
+  /* O index.css define estas duas no :root; repetimos aqui para vencer. */
+  color: var(--rg-text);
+  background-color: var(--rg-bg-deep);
+}
+
+/* --------------------------------------------------------------------------
+   2. Base: fundo com brilho de CRT, linhas de varredura e vinheta
+   -------------------------------------------------------------------------- */
+html {
+  scrollbar-color: var(--rg-line) var(--rg-bg-deep);
+}
+
+body {
+  font-family: var(--rg-font-body);
+  background:
+    radial-gradient(900px 520px at 6% -6%, rgba(255, 176, 0, 0.16), transparent 62%),
+    radial-gradient(820px 620px at 100% 100%, rgba(45, 212, 191, 0.10), transparent 62%),
+    var(--rg-bg);
+  background-attachment: fixed;
+}
+
+/* Mantém o rodapé no fim da tela mesmo com pouco conteúdo */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#root > main {
+  flex: 1 0 auto;
+}
+
+/* Linhas de varredura (apague este bloco para desligar o efeito) */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0 2px,
+    rgba(0, 0, 0, 0.16) 2px 3px
+  );
+  opacity: 0.4;
+}
+
+/* Vinheta de tubo de TV (apague este bloco para desligar o efeito) */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, transparent 62%, rgba(0, 0, 0, 0.38) 100%);
+}
+
+::selection {
+  background: var(--rg-amber);
+  color: #1a1200;
+}
+
+:where(a, button, [tabindex]):focus-visible {
+  outline: 2px solid var(--rg-amber);
+  outline-offset: 2px;
+}
+
+/* --------------------------------------------------------------------------
+   3. Tipografia
+   -------------------------------------------------------------------------- */
+h1,
+.h1 {
+  font-family: var(--rg-font-pixel);
+  font-size: clamp(1.1rem, 2.6vw, 1.7rem);
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  color: var(--rg-amber);
+  text-shadow: 3px 3px 0 #7a3b00, 0 0 18px rgba(255, 176, 0, 0.45);
+}
+
+h2,
+h2.h3,
+h2.h4,
+h2.h5 {
+  font-family: var(--rg-font-pixel);
+  font-size: 0.9rem;
+  line-height: 1.7;
+  letter-spacing: 0.02em;
+}
+
+.card-title {
+  font-family: var(--rg-font-pixel);
+  font-size: 0.74rem;
+  line-height: 1.8;
+  letter-spacing: 0.01em;
+}
+
+/* --------------------------------------------------------------------------
+   4. Barra de navegação
+   -------------------------------------------------------------------------- */
+.navbar.navbar-dark {
+  --bs-navbar-color: var(--rg-muted);
+  --bs-navbar-hover-color: var(--rg-amber-soft);
+  --bs-navbar-active-color: var(--rg-amber);
+  --bs-navbar-brand-color: var(--rg-amber);
+  --bs-navbar-brand-hover-color: var(--rg-amber-soft);
+
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  padding-block: 0.7rem;
+  background-image: var(--rg-stripe);
+  background-size: 100% 3px;
+  background-position: bottom;
+  background-repeat: no-repeat;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+}
+
+.navbar-brand,
+.navbar-brand.fw-bold {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-family: var(--rg-font-pixel);
+  font-size: 0.85rem;
+  font-weight: 400 !important; /* a fonte pixel não tem negrito */
+  letter-spacing: 0.04em;
+  text-shadow: 2px 2px 0 #7a3b00, 0 0 14px rgba(255, 176, 0, 0.4);
+}
+
+/* Direcional (D-pad) desenhado só com CSS */
+.navbar-brand::before {
+  content: '';
+  width: 26px;
+  height: 26px;
+  background:
+    linear-gradient(#d9d4c7, #d9d4c7) center / 100% 34% no-repeat,
+    linear-gradient(#d9d4c7, #d9d4c7) center / 34% 100% no-repeat;
+  filter: drop-shadow(0 0 6px rgba(255, 176, 0, 0.55));
+}
+
+.navbar .nav-link {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.navbar-nav .nav-link.active::before {
+  content: '▶';
+  display: inline-block;
+  margin-right: 0.45em;
+  font-size: 0.55em;
+  vertical-align: 0.14em;
+}
+
+/* O botão "Administração" usa btn-link; fazemos ele parecer um nav-link */
+.navbar .nav-link.btn.btn-link {
+  --bs-btn-color: var(--rg-muted);
+  --bs-btn-hover-color: var(--rg-amber-soft);
+  --bs-btn-active-color: var(--rg-amber);
+  --bs-btn-border-width: 0;
+  text-decoration: none;
+  box-shadow: none;
+}
+
+.navbar-text {
+  color: var(--rg-muted);
+}
+
+.dropdown-menu {
+  --bs-dropdown-bg: var(--rg-surface);
+  --bs-dropdown-color: var(--rg-text);
+  --bs-dropdown-border-color: var(--rg-line);
+  --bs-dropdown-border-width: 2px;
+  --bs-dropdown-border-radius: 10px;
+  --bs-dropdown-link-color: var(--rg-text);
+  --bs-dropdown-link-hover-color: #1a1200;
+  --bs-dropdown-link-hover-bg: var(--rg-amber);
+  --bs-dropdown-link-active-color: #fff;
+  --bs-dropdown-link-active-bg: var(--rg-red);
+  box-shadow: 0 14px 34px rgba(0, 0, 0, 0.55);
+}
+
+/* --------------------------------------------------------------------------
+   5. Cabeçalho do catálogo (hero) e painel de filtros
+   Escolhemos o bloco "título + parágrafo" que vem logo antes do formulário
+   de filtros, sem precisar mexer no JSX da página.
+   -------------------------------------------------------------------------- */
+.container > .mb-4:first-child:has(+ form.row) {
+  position: relative;
+  padding: 2rem 1.6rem 1.7rem;
+  border: 2px solid var(--rg-line);
+  border-radius: 14px;
+  overflow: hidden;
+  background:
+    /* faixa das 4 cores no topo */
+    var(--rg-stripe) top / 100% 6px no-repeat,
+    /* quatro botões estilo Super Nintendo (X azul, Y verde, A vermelho, B amarelo) */
+    radial-gradient(circle, var(--rg-blue) 0 55%, transparent 60%) right 3.7rem top 28% / 1.5rem 1.5rem no-repeat,
+    radial-gradient(circle, var(--rg-green) 0 55%, transparent 60%) right 5.5rem top 46% / 1.5rem 1.5rem no-repeat,
+    radial-gradient(circle, var(--rg-red) 0 55%, transparent 60%) right 1.9rem top 46% / 1.5rem 1.5rem no-repeat,
+    radial-gradient(circle, var(--rg-yellow) 0 55%, transparent 60%) right 3.7rem top 64% / 1.5rem 1.5rem no-repeat,
+    /* brilho âmbar */
+    linear-gradient(135deg, rgba(255, 176, 0, 0.12), transparent 48%),
+    var(--rg-surface);
+  box-shadow: var(--bs-box-shadow-sm);
+}
+
+.container > .mb-4:first-child:has(+ form.row) h1 {
+  margin-bottom: 0.9rem;
+}
+
+.container > .mb-4:first-child:has(+ form.row) p {
+  max-width: 42ch;
+  margin-bottom: 0;
+  font-size: 1.05rem;
+}
+
+.container > .mb-4:first-child:has(+ form.row)::after {
+  content: '▶ PRESS START';
+  position: absolute;
+  right: 1.4rem;
+  bottom: 0.95rem;
+  font-family: var(--rg-font-pixel);
+  font-size: 0.58rem;
+  letter-spacing: 0.08em;
+  color: var(--rg-amber);
+  animation: rg-piscar 1.2s steps(1, end) infinite;
+}
+
+@keyframes rg-piscar {
+  0%,
+  55% {
+    opacity: 1;
+  }
+  56%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Em telas pequenas os botões decorativos atrapalhariam o texto */
+@media (max-width: 575.98px) {
+  .container > .mb-4:first-child:has(+ form.row) {
+    background:
+      var(--rg-stripe) top / 100% 6px no-repeat,
+      linear-gradient(135deg, rgba(255, 176, 0, 0.12), transparent 48%),
+      var(--rg-surface);
+  }
+
+  .container > .mb-4:first-child:has(+ form.row)::after {
+    display: none;
+  }
+}
+
+/* Painel dos filtros */
+form.row.g-3.mb-4 {
+  margin-inline: 0;
+  padding: 0.85rem 0.6rem 1rem;
+  background: var(--rg-surface);
+  border: 2px solid var(--rg-line);
+  border-radius: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   6. Botões (estilo botões de console: ficam "afundados" ao clicar)
+   -------------------------------------------------------------------------- */
+.btn {
+  font-family: var(--rg-font-body);
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  border-radius: 8px;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.12s ease,
+    color 0.12s ease, border-color 0.12s ease;
+}
+
+.btn-primary {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: var(--rg-red);
+  --bs-btn-border-color: var(--rg-red-edge);
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: #e0343f;
+  --bs-btn-hover-border-color: var(--rg-red-edge);
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: #b3222c;
+  --bs-btn-active-border-color: var(--rg-red-edge);
+  --bs-btn-focus-shadow-rgb: 255, 176, 0;
+  --bs-btn-disabled-color: #fff;
+  --bs-btn-disabled-bg: var(--rg-red);
+  --bs-btn-disabled-border-color: var(--rg-red-edge);
+  box-shadow: 0 4px 0 var(--rg-red-dark);
+}
+
+.btn-primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 5px 0 var(--rg-red-dark);
+}
+
+.btn-primary:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 var(--rg-red-dark);
+}
+
+.btn-primary:disabled,
+.btn-primary.disabled {
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-outline-primary {
+  --bs-btn-color: var(--rg-amber);
+  --bs-btn-border-color: var(--rg-amber);
+  --bs-btn-hover-color: #1a1200;
+  --bs-btn-hover-bg: var(--rg-amber);
+  --bs-btn-hover-border-color: var(--rg-amber);
+  --bs-btn-active-color: #1a1200;
+  --bs-btn-active-bg: var(--rg-amber-soft);
+  --bs-btn-active-border-color: var(--rg-amber-soft);
+  --bs-btn-disabled-color: var(--rg-amber);
+  --bs-btn-disabled-border-color: var(--rg-amber);
+  --bs-btn-focus-shadow-rgb: 255, 176, 0;
+}
+
+.btn-outline-secondary {
+  --bs-btn-color: var(--rg-muted);
+  --bs-btn-border-color: var(--rg-line);
+  --bs-btn-hover-color: var(--rg-text);
+  --bs-btn-hover-bg: var(--rg-surface-2);
+  --bs-btn-hover-border-color: var(--rg-amber);
+  --bs-btn-active-color: var(--rg-text);
+  --bs-btn-active-bg: var(--rg-surface-2);
+  --bs-btn-active-border-color: var(--rg-amber);
+  --bs-btn-disabled-color: var(--rg-muted);
+  --bs-btn-disabled-border-color: var(--rg-line);
+  --bs-btn-focus-shadow-rgb: 255, 176, 0;
+}
+
+.btn-outline-danger {
+  --bs-btn-color: #ff7b82;
+  --bs-btn-border-color: #ff7b82;
+  --bs-btn-hover-color: #1a0507;
+  --bs-btn-hover-bg: #ff7b82;
+  --bs-btn-hover-border-color: #ff7b82;
+  --bs-btn-active-color: #1a0507;
+  --bs-btn-active-bg: #ff9ca1;
+  --bs-btn-active-border-color: #ff9ca1;
+  --bs-btn-disabled-color: #ff7b82;
+  --bs-btn-disabled-border-color: #ff7b82;
+}
+
+/* --------------------------------------------------------------------------
+   7. Cards — viram "cartuchos" com a faixa das 4 cores no topo
+   -------------------------------------------------------------------------- */
+.card {
+  --bs-card-bg: var(--rg-surface);
+  --bs-card-color: var(--rg-text);
+  --bs-card-border-color: var(--rg-line);
+  --bs-card-border-width: 2px;
+  --bs-card-border-radius: 12px;
+  --bs-card-inner-border-radius: 10px;
+  --bs-card-cap-bg: var(--rg-surface-2);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 4px;
+  background: var(--rg-stripe);
+  z-index: 1;
+}
+
+.card-body {
+  padding-top: 1.4rem;
+}
+
+/* Só os cards do catálogo (h-100) reagem ao passar o mouse */
+.card.h-100:hover {
+  transform: translateY(-5px);
+  border-color: var(--rg-amber);
+  box-shadow: 0 0 0 1px var(--rg-amber), 0 14px 34px rgba(255, 176, 0, 0.2) !important;
+}
+
+/* Etiqueta da plataforma: cara de etiqueta de cartucho cinza */
+.badge {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  border-radius: 6px;
+}
+
+.badge.text-bg-secondary {
+  background-color: #d7d2c3 !important;
+  color: #26222f !important;
+  border: 2px solid #8f8a7a;
+  border-radius: 4px;
+  font-family: var(--rg-font-pixel);
+  font-size: 0.56rem;
+  font-weight: 400;
+  line-height: 1.5;
+  letter-spacing: 0.04em;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+}
+
+/* Estoque: "LED" aceso ao lado do texto */
+.badge.text-bg-success,
+.badge.text-bg-danger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.4em 0.7em;
+  font-size: 0.74rem;
+}
+
+.badge.text-bg-success::before,
+.badge.text-bg-danger::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow: 0 0 8px currentColor;
+}
+
+.badge.text-bg-success {
+  background-color: rgba(57, 196, 106, 0.14) !important;
+  color: var(--rg-green) !important;
+  border: 1px solid rgba(57, 196, 106, 0.55);
+}
+
+.badge.text-bg-danger {
+  background-color: rgba(255, 107, 115, 0.14) !important;
+  color: #ff7b82 !important;
+  border: 1px solid rgba(255, 107, 115, 0.55);
+}
+
+/* Preço: visor de LCD verde de Game Boy */
+.card h5.text-success {
+  align-self: flex-start;
+  padding: 0.1rem 0.7rem 0.15rem;
+  font-family: var(--rg-font-lcd);
+  font-size: 1.9rem;
+  line-height: 1.1;
+  letter-spacing: 0.06em;
+  color: var(--rg-lcd-fg) !important;
+  background: var(--rg-lcd-bg);
+  border-radius: 5px;
+  text-shadow: 0 0 8px rgba(155, 188, 15, 0.55);
+  box-shadow: inset 0 0 0 3px #306230, inset 0 3px 8px rgba(0, 0, 0, 0.55);
+}
+
+/* --------------------------------------------------------------------------
+   8. Formulários
+   -------------------------------------------------------------------------- */
+.form-label {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--rg-amber-soft);
+}
+
+.form-control,
+.form-select {
+  color: var(--rg-text);
+  background-color: #0e0b15;
+  border: 2px solid var(--rg-line);
+  border-radius: 8px;
+}
+
+.form-control::placeholder {
+  color: #8277a0;
+}
+
+.form-control:focus,
+.form-select:focus {
+  color: var(--rg-text);
+  background-color: #0e0b15;
+  border-color: var(--rg-amber);
+  box-shadow: 0 0 0 0.2rem rgba(255, 176, 0, 0.25);
+}
+
+.form-control:disabled,
+.form-select:disabled {
+  background-color: var(--rg-surface);
+  color: var(--rg-muted);
+}
+
+.form-select {
+  --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23ffb000' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+
+.form-select option {
+  background: var(--rg-surface);
+  color: var(--rg-text);
+}
+
+.form-check-input {
+  background-color: #0e0b15;
+  border: 2px solid var(--rg-line);
+}
+
+.form-check-input:checked {
+  background-color: var(--rg-red);
+  border-color: var(--rg-red-edge);
+}
+
+.form-check-input:focus {
+  border-color: var(--rg-amber);
+  box-shadow: 0 0 0 0.2rem rgba(255, 176, 0, 0.25);
+}
+
+.invalid-feedback {
+  color: #ff8a91;
+}
+
+.form-control.is-invalid,
+.form-select.is-invalid {
+  border-color: #ff6b73;
+}
+
+/* --------------------------------------------------------------------------
+   9. Alertas e estados (carregando, erro, vazio)
+   -------------------------------------------------------------------------- */
+.alert {
+  --bs-alert-color: var(--rg-text);
+  --bs-alert-bg: var(--rg-surface);
+  --bs-alert-border-color: var(--rg-line);
+  --bs-alert-border-radius: 12px;
+  border-width: 2px;
+}
+
+.alert-danger {
+  --bs-alert-color: #ffd5d8;
+  --bs-alert-bg: rgba(229, 72, 77, 0.12);
+  --bs-alert-border-color: rgba(255, 107, 115, 0.55);
+}
+
+.alert-warning {
+  --bs-alert-color: #ffe9b0;
+  --bs-alert-bg: rgba(255, 176, 0, 0.1);
+  --bs-alert-border-color: rgba(255, 176, 0, 0.5);
+}
+
+.alert-success {
+  --bs-alert-color: #c9f5d8;
+  --bs-alert-bg: rgba(57, 196, 106, 0.12);
+  --bs-alert-border-color: rgba(57, 196, 106, 0.5);
+}
+
+.alert-info {
+  --bs-alert-color: #cfe0ff;
+  --bs-alert-bg: rgba(58, 111, 224, 0.14);
+  --bs-alert-border-color: rgba(95, 144, 255, 0.5);
+}
+
+/* Estado vazio: borda tracejada, como uma tela de "continue?" */
+.alert-secondary {
+  border-style: dashed;
+  padding-block: 1.75rem;
+}
+
+.spinner-border.text-primary {
+  color: var(--rg-amber) !important;
+  filter: drop-shadow(0 0 6px rgba(255, 176, 0, 0.55));
+}
+
+/* --------------------------------------------------------------------------
+   10. Tabelas (telas de administração e pedidos)
+   -------------------------------------------------------------------------- */
+.table {
+  --bs-table-color: var(--rg-text);
+  --bs-table-bg: transparent;
+  --bs-table-border-color: var(--rg-line);
+  --bs-table-striped-color: var(--rg-text);
+  --bs-table-striped-bg: rgba(255, 255, 255, 0.03);
+  --bs-table-hover-color: var(--rg-text);
+  --bs-table-hover-bg: rgba(255, 176, 0, 0.09);
+}
+
+.table thead th {
+  font-family: var(--rg-font-pixel);
+  font-size: 0.6rem;
+  font-weight: 400;
+  line-height: 1.7;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--rg-amber);
+  border-bottom: 2px solid var(--rg-amber);
+}
+
+.table-responsive {
+  background: var(--rg-surface);
+  border: 2px solid var(--rg-line);
+  border-radius: 12px;
+}
+
+/* --------------------------------------------------------------------------
+   11. Paginação
+   -------------------------------------------------------------------------- */
+.pagination {
+  --bs-pagination-color: var(--rg-text);
+  --bs-pagination-bg: var(--rg-surface);
+  --bs-pagination-border-color: var(--rg-line);
+  --bs-pagination-hover-color: var(--rg-amber);
+  --bs-pagination-hover-bg: var(--rg-surface-2);
+  --bs-pagination-hover-border-color: var(--rg-amber);
+  --bs-pagination-focus-color: var(--rg-amber);
+  --bs-pagination-focus-bg: var(--rg-surface-2);
+  --bs-pagination-focus-box-shadow: 0 0 0 0.2rem rgba(255, 176, 0, 0.25);
+  --bs-pagination-active-color: #fff;
+  --bs-pagination-active-bg: var(--rg-red);
+  --bs-pagination-active-border-color: var(--rg-red-edge);
+  --bs-pagination-disabled-color: #6d6486;
+  --bs-pagination-disabled-bg: transparent;
+  --bs-pagination-disabled-border-color: var(--rg-line);
+  gap: 0.35rem;
+}
+
+.page-link {
+  font-weight: 700;
+  border-width: 2px;
+  border-radius: 8px !important;
+}
+
+.page-item:not(:first-child) .page-link {
+  margin-left: 0;
+}
+
+/* --------------------------------------------------------------------------
+   12. Rodapé
+   -------------------------------------------------------------------------- */
+footer.bg-dark {
+  margin-top: 2rem;
+  padding-block: 1.4rem !important;
+  color: var(--rg-muted) !important;
+  background-image: var(--rg-stripe);
+  background-size: 100% 3px;
+  background-position: top;
+  background-repeat: no-repeat;
+}
+
+footer.bg-dark p {
+  font-family: var(--rg-font-pixel);
+  font-size: 0.6rem;
+  line-height: 1.8;
+  letter-spacing: 0.06em;
+}
+
+/* --------------------------------------------------------------------------
+   13. Acessibilidade: respeita quem prefere menos movimento
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .card.h-100:hover,
+  .btn-primary:hover,
+  .btn-primary:active {
+    transform: none;
+  }
+}
