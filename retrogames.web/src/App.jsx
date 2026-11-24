@@ -1,3 +1,4 @@
+
 import { Routes, Route } from 'react-router-dom'
 
 import Layout from './components/Layout'
@@ -6,12 +7,15 @@ import RotaProtegida from './components/RotaProtegida'
 import Catalogo from './pages/Catalogo/Catalogo'
 import DetalheJogo from './pages/Catalogo/DetalheJogo'
 import Login from './pages/Login/Login'
+import Cadastro from './pages/Cadastro/Cadastro'
 import NaoEncontrada from './pages/NaoEncontrada'
 
 import Jogos from './pages/Admin/Jogos'
 import FormularioJogo from './pages/Admin/FormularioJogo'
 import Plataforma from './pages/Auxiliares/Plataforma'
-import Cadastro from './pages/Cadastro/Cadastro'
+
+import Carrinho from './pages/Carrinho/Carrinho'
+import MeusPedidos from './pages/MeusPedidos/MeusPedidos'
 
 function App() {
   return (
@@ -22,6 +26,15 @@ function App() {
         <Route path="/jogos/:id" element={<DetalheJogo />} />
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
+
+        {/* Rotas do cliente */}
+        <Route path="/carrinho" element={<RotaProtegida />}>
+          <Route index element={<Carrinho />} />
+        </Route>
+
+        <Route path="/meus-pedidos" element={<RotaProtegida />}>
+          <Route index element={<MeusPedidos />} />
+        </Route>
 
         {/* Rotas administrativas */}
         <Route
@@ -34,6 +47,7 @@ function App() {
           <Route path="plataformas" element={<Plataforma />} />
         </Route>
 
+        {/* Página não encontrada */}
         <Route path="*" element={<NaoEncontrada />} />
       </Route>
     </Routes>

@@ -1,0 +1,181 @@
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+
+import useCarrinho from '../../hooks/useCarrinho'
+import { pedidoApi } from '../../api/servicos'
+import { obterMensagemErro } from '../../api/erros'
+import { formatarPreco } from '../../lib/formato'
+
+function Carrinho() {
+  const {
+    itens,
+    total,
+    alterarQuantidade,
+    removerItem,
+    limparCarrinho,
+  } = useCarrinho()
+
+  const [erro, setErro] = useState('')
+  const [finalizando, setFinalizando] = useState(false)
+
+  const navegar = useNavigate()
+
+  async function finalizarCompra() {
+    setErro('')
+    setFinalizando(true)
+
+    try {
+      await pedidoApi.finalizar(itens)
+
+      limparCarrinho()
+      navegar('/meus-pedidos')
+    } catch (erro) {
+      setErro(obterMensagemErro(erro))
+    } finally {
+      setFinalizando(false)
+    }
+  }
+
+  return (
+    <div className="container py-4">
+      <div className="mb-4">
+        <h1>Meu carrinho</h1>
+        <p className="text-muted">
+          Confira seus jogos antes de finalizar a compra.
+        </p>
+      </div>
+
+      {erro && (
+        <div className="alert alert-danger" role="alert">
+          {erro}
+        </div>
+      )}
+
+      {itens.length === 0 ? (
+        <div className="alert alert-secondary text-center py-4">
+          <h2 className="h5">Seu carrinho está vazio</h2>
+
+          <p className="mb-3">
+            Você ainda não adicionou nenhum jogo.
+          </p>
+
+          <Link to="/" className="btn btn-primary">
+            Explorar jogos
+          </Link>
+        </div>
+      ) : (
+        <>
+          <div className="card shadow-sm mb-4">
+            <div className="card-body">
+              {itens.map((item) => (
+                <div
+                  key={item.id}
+                  className="row align-items-center border-bottom py-3"
+                >
+                  <div className="col-md-4">
+                    <h2 className="h6 mb-1">{item.nome}</h2>
+
+                    <span className="text-muted">
+                      {formatarPreco(item.preco)} por unidade
+                    </span>
+                  </div>
+
+                  <div className="col-md-3 my-2 my-md-0">
+                    <label
+                      htmlFor={`quantidade-${item.id}`}
+                      className="form-label mb-1"
+                    >
+                      Quantidade
+                    </label>
+
+                    <select
+                      id={`quantidade-${item.id}`}
+                      className="form-select"
+                      value={item.quantidade}
+                      disabled={finalizando}
+                      onChange={(evento) =>
+                        alterarQuantidade(
+                          item.id,
+                          Number(evento.target.value)
+                        )
+                      }
+                    >
+                      {Array.from(
+                        { length: Math.min(10, item.estoque) },
+                        (_, indice) => indice + 1
+                      ).map((quantidade) => (
+                        <option
+                          key={quantidade}
+                          value={quantidade}
+                        >
+                          {quantidade}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="col-md-3 my-2 my-md-0">
+                    <span className="text-muted">
+                      Subtotal
+                    </span>
+
+                    <p className="fw-bold mb-0">
+                      {formatarPreco(
+                        item.preco * item.quantidade
+                      )}
+                    </p>
+                  </div>
+
+                  <div className="col-md-2 text-md-end">
+                    <button
+                      type="button"
+                      className="btn btn-outline-danger btn-sm"
+                      disabled={finalizando}
+                      onClick={() => removerItem(item.id)}
+                    >
+                      Remover
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div className="card shadow-sm">
+            <div className="card-body">
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <h2 className="h5 mb-0">Total da compra</h2>
+
+                <span className="fs-4 fw-bold">
+                  {formatarPreco(total)}
+                </span>
+              </div>
+
+              <div className="d-flex justify-content-between flex-wrap gap-2">
+                <Link
+                  to="/"
+                  className="btn btn-outline-secondary"
+                >
+                  Continuar comprando
+                </Link>
+
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  disabled={finalizando || itens.length === 0}
+                  onClick={finalizarCompra}
+                >
+                  {finalizando
+                    ? 'Finalizando compra...'
+                    : 'Finalizar compra'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  )
+}
+
+export default Carrinho

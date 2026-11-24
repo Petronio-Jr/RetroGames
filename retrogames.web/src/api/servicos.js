@@ -101,4 +101,9 @@ export const pedidoApi = {
 
     return resposta.data.data
   },
+
+  async listarMeus() {
+    const resposta = await api.get('/Pedido/meus')
+    return resposta.data.data
+  },
 }
