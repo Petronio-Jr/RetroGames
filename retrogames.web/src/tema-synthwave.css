@@ -807,3 +807,29 @@ main h2.h4, main .text-muted { text-shadow: 0 1px 8px rgba(5, 2, 30, 0.9); }
   color: #27213b;
   text-shadow: 0 0 7px color-mix(in srgb, var(--capa-destaque) 28%, transparent);
 }
+
+/* Etiquetas dos cartuchos: cores mais escuras e saturadas */
+.capa-cartucho-arte {
+  background:
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--capa-destaque) 45%, #100b2c),
+      color-mix(in srgb, var(--capa-secundaria) 40%, #08051d)
+    );
+
+  border-color: color-mix(
+    in srgb,
+    var(--capa-destaque) 55%,
+    #aaa
+  );
+
+  box-shadow:
+    inset 0 0 18px rgba(0, 0, 0, 0.35),
+    inset 0 0 8px color-mix(in srgb, var(--capa-destaque) 15%, transparent);
+}
+
+/* Remove o círculo e as camadas decorativas */
+.capa-cartucho-arte::before,
+.capa-cartucho-arte::after {
+  content: none;
+}
