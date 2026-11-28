@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from 'react'
 import CarrinhoContext from './carrinhoContext'
 import useAutenticacao from '../hooks/useAutenticacao'
@@ -42,8 +43,11 @@ function combinarCarrinhos(carrinhoConta, carrinhoVisitante) {
     }
 
     if (itemExistente) {
-      const quantidadeAtual = Number(itemExistente.quantidade) || 0
-      const quantidadeVisitante = Number(itemVisitante.quantidade) || 0
+      const quantidadeAtual =
+        Number(itemExistente.quantidade) || 0
+
+      const quantidadeVisitante =
+        Number(itemVisitante.quantidade) || 0
 
       itemExistente.estoque = Math.min(
         Number(itemExistente.estoque) || estoque,
@@ -132,6 +136,11 @@ function CarrinhoProvider({ children }) {
   }, [itens, chaveAtual, chaveCarregada, carregando])
 
   function adicionarItem(jogo) {
+    // Proteção contra adição por contas administrativas.
+    if (carregando || usuario?.perfil === 'Administrador') {
+      return false
+    }
+
     if (jogo.estoque <= 0) {
       return false
     }
@@ -180,6 +189,11 @@ function CarrinhoProvider({ children }) {
   }
 
   function alterarQuantidade(idJogo, quantidade) {
+    // Administradores não podem modificar o carrinho.
+    if (usuario?.perfil === 'Administrador') {
+      return
+    }
+
     const item = itens.find(item => item.id === idJogo)
 
     if (!item || quantidade < 1 || quantidade > 10) {
@@ -200,12 +214,20 @@ function CarrinhoProvider({ children }) {
   }
 
   function removerItem(idJogo) {
+    if (usuario?.perfil === 'Administrador') {
+      return
+    }
+
     setItens(itensAtuais =>
       itensAtuais.filter(item => item.id !== idJogo)
     )
   }
 
   function limparCarrinho() {
+    if (usuario?.perfil === 'Administrador') {
+      return
+    }
+
     setItens([])
   }
 

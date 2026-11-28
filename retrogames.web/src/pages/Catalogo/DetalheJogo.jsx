@@ -1,12 +1,16 @@
-
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
 
 import { jogoApi } from '../../api/servicos'
 import { obterMensagemErro } from '../../api/erros'
 import { formatarPreco } from '../../lib/formato'
-import { Carregando, MensagemErro } from '../../components/MensagensEstado'
+import {
+  Carregando,
+  MensagemErro,
+} from '../../components/MensagensEstado'
 import useCarrinho from '../../hooks/useCarrinho'
+import useAutenticacao from '../../hooks/useAutenticacao'
+import CapaJogo from '../../components/CapaJogo'
 
 function DetalheJogo() {
   const { id } = useParams()
@@ -17,6 +21,11 @@ function DetalheJogo() {
   const [mensagemCarrinho, setMensagemCarrinho] = useState('')
 
   const { adicionarItem, itens } = useCarrinho()
+
+  const {
+    ehAdministrador,
+    carregando: carregandoAutenticacao,
+  } = useAutenticacao()
 
   useEffect(() => {
     async function carregarJogo() {
@@ -61,6 +70,20 @@ function DetalheJogo() {
   }
 
   function lidarComAdicao() {
+    if (carregandoAutenticacao) {
+      setMensagemCarrinho(
+        'Aguarde enquanto verificamos sua sessão.'
+      )
+      return
+    }
+
+    if (ehAdministrador) {
+      setMensagemCarrinho(
+        'Ação não permitida: contas administrativas não podem adicionar produtos ao carrinho. Entre com uma conta de cliente para realizar compras.'
+      )
+      return
+    }
+
     const itemExistente = itens.find(
       item => item.id === jogo.id
     )
@@ -100,6 +123,8 @@ function DetalheJogo() {
       </Link>
 
       <div className="card shadow-sm">
+        <CapaJogo jogo={jogo} className="capa-detalhe" />
+
         <div className="card-body p-4">
           <div className="d-flex justify-content-between align-items-start flex-wrap gap-3 mb-3">
             <div>
@@ -128,7 +153,11 @@ function DetalheJogo() {
               <p>
                 {jogo.generos?.length
                   ? jogo.generos
-                      .map(genero => genero.nome)
+                      .map(genero =>
+                        typeof genero === 'string'
+                          ? genero
+                          : genero.nome
+                      )
                       .join(', ')
                   : 'Não informado'}
               </p>
@@ -137,7 +166,8 @@ function DetalheJogo() {
             <div className="col-12">
               <strong>Descrição:</strong>
               <p>
-                {jogo.descricao || 'Nenhuma descrição cadastrada.'}
+                {jogo.descricao ||
+                  'Nenhuma descrição cadastrada.'}
               </p>
             </div>
           </div>
@@ -154,10 +184,15 @@ function DetalheJogo() {
 
             <div className="text-end">
               <strong>Estoque:</strong>
+
               {jogo.estoque > 0 ? (
-                <p className="mb-0">{jogo.estoque} unidade(s)</p>
+                <p className="mb-0">
+                  {jogo.estoque} unidade(s)
+                </p>
               ) : (
-                <p className="text-danger fw-bold mb-0">Esgotado</p>
+                <p className="text-danger fw-bold mb-0">
+                  Esgotado
+                </p>
               )}
             </div>
           </div>
@@ -167,7 +202,10 @@ function DetalheJogo() {
           <div>
             <button
               className="btn btn-success w-100"
-              disabled={jogo.estoque <= 0}
+              disabled={
+                jogo.estoque <= 0 ||
+                carregandoAutenticacao
+              }
               onClick={lidarComAdicao}
             >
               {jogo.estoque > 0
@@ -176,9 +214,15 @@ function DetalheJogo() {
             </button>
 
             {mensagemCarrinho && (
-              <p className="text-center mt-2 mb-0">
+              <div
+                className={`alert ${
+                  ehAdministrador
+                    ? 'alert-warning'
+                    : 'alert-info'
+                } text-center mt-3 mb-0`}
+              >
                 {mensagemCarrinho}
-              </p>
+              </div>
             )}
           </div>
         </div>

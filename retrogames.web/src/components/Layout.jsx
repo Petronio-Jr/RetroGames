@@ -1,7 +1,7 @@
 
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
 import useAutenticacao from '../hooks/useAutenticacao'
-import useCarrinho from '../hooks/useCarrinho'
+import FundoInterativo from './FundoInterativo'
 
 function Layout() {
   const {
@@ -12,9 +12,8 @@ function Layout() {
     sair,
   } = useAutenticacao()
 
-  const { quantidadeItens } = useCarrinho()
-
   const ehCliente = usuario?.perfil === 'Cliente'
+
   const navegar = useNavigate()
 
   async function lidarComSaida() {
@@ -27,12 +26,18 @@ function Layout() {
 
   return (
     <>
+      {/* NOVO: fundo retrô interativo */}
+      <FundoInterativo />
+
+      {/* Barra de navegação */}
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container">
+
           <Link className="navbar-brand fw-bold" to="/">
             RetroGames
           </Link>
 
+          {/* Botão do menu para telas menores */}
           <button
             className="navbar-toggler"
             type="button"
@@ -45,7 +50,9 @@ function Layout() {
             <span className="navbar-toggler-icon"></span>
           </button>
 
+          {/* Itens da navegação */}
           <div className="collapse navbar-collapse" id="menuNavegacao">
+
             <ul className="navbar-nav me-auto">
               <li className="nav-item">
                 <NavLink
@@ -59,37 +66,31 @@ function Layout() {
                 </NavLink>
               </li>
 
-              {/* Carrinho disponível para visitantes e clientes */}
-              {!ehAdministrador && (
-                <li className="nav-item">
-                  <NavLink
-                    className={({ isActive }) =>
-                      `nav-link ${isActive ? 'active' : ''}`
-                    }
-                    to="/carrinho"
-                  >
-                    Carrinho
-                    {quantidadeItens > 0 && (
-                      <span className="badge bg-primary ms-2">
-                        {quantidadeItens}
-                      </span>
-                    )}
-                  </NavLink>
-                </li>
-              )}
-
               {/* Menu exclusivo do cliente */}
               {ehCliente && (
-                <li className="nav-item">
-                  <NavLink
-                    className={({ isActive }) =>
-                      `nav-link ${isActive ? 'active' : ''}`
-                    }
-                    to="/meus-pedidos"
-                  >
-                    Meus pedidos
-                  </NavLink>
-                </li>
+                <>
+                  <li className="nav-item">
+                    <NavLink
+                      className={({ isActive }) =>
+                        `nav-link ${isActive ? 'active' : ''}`
+                      }
+                      to="/carrinho"
+                    >
+                      Carrinho
+                    </NavLink>
+                  </li>
+
+                  <li className="nav-item">
+                    <NavLink
+                      className={({ isActive }) =>
+                        `nav-link ${isActive ? 'active' : ''}`
+                      }
+                      to="/meus-pedidos"
+                    >
+                      Meus pedidos
+                    </NavLink>
+                  </li>
+                </>
               )}
 
               {/* Menu exclusivo do administrador */}
@@ -121,6 +122,7 @@ function Layout() {
               )}
             </ul>
 
+            {/* Área do usuário */}
             <ul className="navbar-nav">
               {!carregando && (
                 estaAutenticado ? (
@@ -149,14 +151,17 @@ function Layout() {
                 )
               )}
             </ul>
+
           </div>
         </div>
       </nav>
 
+      {/* Conteúdo da página */}
       <main className="container py-4">
         <Outlet />
       </main>
 
+      {/* Rodapé */}
       <footer className="bg-dark text-light py-3 mt-auto">
         <div className="container text-center">
           <p className="mb-0">

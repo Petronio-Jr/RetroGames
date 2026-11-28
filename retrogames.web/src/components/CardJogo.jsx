@@ -1,11 +1,19 @@
 import { Link } from 'react-router-dom'
 import { formatarPreco } from '../lib/formato'
+import CapaJogo from './CapaJogo'
 
 function CardJogo({ jogo }) {
   const esgotado = jogo.estoque <= 0
 
   return (
-    <div className="card h-100 shadow-sm">
+    <div className="card card-jogo h-100 shadow-sm">
+      <Link
+        to={`/jogos/${jogo.id}`}
+        aria-label={`Ver detalhes de ${jogo.nome}`}
+      >
+        <CapaJogo jogo={jogo} />
+      </Link>
+
       <div className="card-body d-flex flex-column">
         <span className="badge text-bg-secondary align-self-start mb-2">
           {jogo.nomePlataforma}
@@ -13,16 +21,20 @@ function CardJogo({ jogo }) {
 
         <h5 className="card-title">{jogo.nome}</h5>
 
-        <p className="text-muted mb-2">
-          Ano: {jogo.ano}
-        </p>
+        <p className="text-muted mb-2">Ano: {jogo.ano}</p>
 
         <p className="mb-2">
           Condição: {jogo.descricaoCondicao}
         </p>
 
         <p className="mb-2">
-          Gêneros: {jogo.generos.join(', ')}
+          Gêneros: {Array.isArray(jogo.generos)
+            ? jogo.generos
+                .map(genero =>
+                  typeof genero === 'string' ? genero : genero.nome
+                )
+                .join(', ')
+            : 'Não informado'}
         </p>
 
         <h5 className="text-success mt-2">
