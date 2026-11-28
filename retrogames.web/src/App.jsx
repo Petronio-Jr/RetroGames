@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom'
 
 import Layout from './components/Layout'
 import RotaProtegida from './components/RotaProtegida'
+import RotaCarrinho from './components/RotaCarrinho'
 
 import Catalogo from './pages/Catalogo/Catalogo'
 import DetalheJogo from './pages/Catalogo/DetalheJogo'
@@ -27,11 +28,12 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
 
-        {/* Rotas do cliente */}
-        <Route path="/carrinho" element={<RotaProtegida />}>
+        {/* Carrinho: visitante e cliente */}
+        <Route path="/carrinho" element={<RotaCarrinho />}>
           <Route index element={<Carrinho />} />
         </Route>
 
+        {/* Rotas do cliente */}
         <Route path="/meus-pedidos" element={<RotaProtegida />}>
           <Route index element={<MeusPedidos />} />
         </Route>
@@ -47,7 +49,6 @@ function App() {
           <Route path="plataformas" element={<Plataforma />} />
         </Route>
 
-        {/* Página não encontrada */}
         <Route path="*" element={<NaoEncontrada />} />
       </Route>
     </Routes>

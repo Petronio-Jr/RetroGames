@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 
 import useCarrinho from '../../hooks/useCarrinho'
+import useAutenticacao from '../../hooks/useAutenticacao'
+
 import { pedidoApi } from '../../api/servicos'
 import { obterMensagemErro } from '../../api/erros'
 import { formatarPreco } from '../../lib/formato'
@@ -15,6 +17,8 @@ function Carrinho() {
     limparCarrinho,
   } = useCarrinho()
 
+  const { estaAutenticado, carregando } = useAutenticacao()
+
   const [erro, setErro] = useState('')
   const [finalizando, setFinalizando] = useState(false)
 
@@ -22,6 +26,13 @@ function Carrinho() {
 
   async function finalizarCompra() {
     setErro('')
+
+    // O visitante precisa entrar ou criar uma conta.
+    if (!estaAutenticado) {
+      navegar('/login?voltarPara=%2Fcarrinho')
+      return
+    }
+
     setFinalizando(true)
 
     try {
@@ -40,10 +51,19 @@ function Carrinho() {
     <div className="container py-4">
       <div className="mb-4">
         <h1>Meu carrinho</h1>
+
         <p className="text-muted">
           Confira seus jogos antes de finalizar a compra.
         </p>
       </div>
+
+      {!estaAutenticado && !carregando && (
+        <div className="alert alert-info" role="status">
+          Você está navegando como visitante. Seus itens serão
+          mantidos no carrinho deste navegador. Para finalizar
+          a compra, será necessário entrar ou criar uma conta.
+        </div>
+      )}
 
       {erro && (
         <div className="alert alert-danger" role="alert">
@@ -67,13 +87,15 @@ function Carrinho() {
         <>
           <div className="card shadow-sm mb-4">
             <div className="card-body">
-              {itens.map((item) => (
+              {itens.map(item => (
                 <div
                   key={item.id}
                   className="row align-items-center border-bottom py-3"
                 >
                   <div className="col-md-4">
-                    <h2 className="h6 mb-1">{item.nome}</h2>
+                    <h2 className="h6 mb-1">
+                      {item.nome}
+                    </h2>
 
                     <span className="text-muted">
                       {formatarPreco(item.preco)} por unidade
@@ -93,7 +115,7 @@ function Carrinho() {
                       className="form-select"
                       value={item.quantidade}
                       disabled={finalizando}
-                      onChange={(evento) =>
+                      onChange={evento =>
                         alterarQuantidade(
                           item.id,
                           Number(evento.target.value)
@@ -103,7 +125,7 @@ function Carrinho() {
                       {Array.from(
                         { length: Math.min(10, item.estoque) },
                         (_, indice) => indice + 1
-                      ).map((quantidade) => (
+                      ).map(quantidade => (
                         <option
                           key={quantidade}
                           value={quantidade}
@@ -144,7 +166,9 @@ function Carrinho() {
           <div className="card shadow-sm">
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-center mb-3">
-                <h2 className="h5 mb-0">Total da compra</h2>
+                <h2 className="h5 mb-0">
+                  Total da compra
+                </h2>
 
                 <span className="fs-4 fw-bold">
                   {formatarPreco(total)}
@@ -162,7 +186,11 @@ function Carrinho() {
                 <button
                   type="button"
                   className="btn btn-primary"
-                  disabled={finalizando || itens.length === 0}
+                  disabled={
+                    finalizando ||
+                    carregando ||
+                    itens.length === 0
+                  }
                   onClick={finalizarCompra}
                 >
                   {finalizando

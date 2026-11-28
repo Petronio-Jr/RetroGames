@@ -1,8 +1,24 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import {
+  Link,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom'
 
 import useAutenticacao from '../../hooks/useAutenticacao'
 import { obterMensagemErro } from '../../api/erros'
+
+function obterDestinoValido(destino) {
+  if (
+    destino &&
+    destino.startsWith('/') &&
+    !destino.startsWith('//')
+  ) {
+    return destino
+  }
+
+  return '/'
+}
 
 function Cadastro() {
   const [nome, setNome] = useState('')
@@ -11,8 +27,18 @@ function Cadastro() {
   const [erro, setErro] = useState('')
   const [enviando, setEnviando] = useState(false)
 
+  const [parametros] = useSearchParams()
   const { cadastrar } = useAutenticacao()
+
   const navegar = useNavigate()
+
+  const voltarPara = obterDestinoValido(
+    parametros.get('voltarPara')
+  )
+
+  const linkLogin = voltarPara !== '/'
+    ? `/login?voltarPara=${encodeURIComponent(voltarPara)}`
+    : '/login'
 
   async function lidarComEnvio(evento) {
     evento.preventDefault()
@@ -22,7 +48,8 @@ function Cadastro() {
 
     try {
       await cadastrar(nome, email, senha)
-      navegar('/')
+
+      navegar(voltarPara)
     } catch (erro) {
       setErro(obterMensagemErro(erro))
     } finally {
@@ -35,7 +62,6 @@ function Cadastro() {
       <div className="col-md-6 col-lg-4">
         <div className="card shadow-sm mt-4">
           <div className="card-body p-4">
-
             <h2 className="text-center mb-4">
               Criar conta
             </h2>
@@ -51,7 +77,7 @@ function Cadastro() {
                   className="form-control"
                   id="nome"
                   value={nome}
-                  onChange={(evento) => setNome(evento.target.value)}
+                  onChange={evento => setNome(evento.target.value)}
                   required
                 />
               </div>
@@ -66,7 +92,7 @@ function Cadastro() {
                   className="form-control"
                   id="email"
                   value={email}
-                  onChange={(evento) => setEmail(evento.target.value)}
+                  onChange={evento => setEmail(evento.target.value)}
                   maxLength={254}
                   required
                 />
@@ -82,7 +108,7 @@ function Cadastro() {
                   className="form-control"
                   id="senha"
                   value={senha}
-                  onChange={(evento) => setSenha(evento.target.value)}
+                  onChange={evento => setSenha(evento.target.value)}
                   required
                 />
               </div>
@@ -106,9 +132,10 @@ function Cadastro() {
 
             <p className="text-center mb-0">
               Já possui uma conta?{' '}
-              <Link to="/login">Entrar</Link>
+              <Link to={linkLogin}>
+                Entrar
+              </Link>
             </p>
-
           </div>
         </div>
       </div>

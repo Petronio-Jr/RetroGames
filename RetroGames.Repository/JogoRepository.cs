@@ -35,11 +35,18 @@ public class JogoRepository : RepositoryBase, IJogoRepository
 
         await using var comandoTotal = CriarComando(conexao, "");
 
-        AdicionarParametro(comandoTotal, "@busca",
-            string.IsNullOrWhiteSpace(busca) ? null : $"%{busca}%");
+        AdicionarParametro(
+            comandoTotal,
+            "@busca",
+            string.IsNullOrWhiteSpace(busca) ? null : $"%{busca}%"
+        );
 
         AdicionarParametro(comandoTotal, "@idPlataforma", idPlataforma);
-        AdicionarParametro(comandoTotal, "@incluirInativos", incluirInativos ? 1 : 0);
+        AdicionarParametro(
+            comandoTotal,
+            "@incluirInativos",
+            incluirInativos ? 1 : 0
+        );
 
         if (idsJogos != null)
         {
@@ -59,10 +66,13 @@ public class JogoRepository : RepositoryBase, IJogoRepository
                     AdicionarParametro(
                         comandoTotal,
                         nomeParametro,
-                        idsJogos[i]);
+                        idsJogos[i]
+                    );
                 }
 
-                filtros.Add($"co_seq_jogo IN ({string.Join(", ", parametrosIds)})");
+                filtros.Add(
+                    $"co_seq_jogo IN ({string.Join(", ", parametrosIds)})"
+                );
             }
         }
 
@@ -74,7 +84,9 @@ public class JogoRepository : RepositoryBase, IJogoRepository
             WHERE {where};
             """;
 
-        int total = Convert.ToInt32(await comandoTotal.ExecuteScalarAsync());
+        int total = Convert.ToInt32(
+            await comandoTotal.ExecuteScalarAsync()
+        );
 
         int offset = (pagina - 1) * tamanhoPagina;
 
@@ -96,17 +108,28 @@ public class JogoRepository : RepositoryBase, IJogoRepository
             LIMIT @limite OFFSET @offset;
             """);
 
-        AdicionarParametro(comando, "@busca",
-            string.IsNullOrWhiteSpace(busca) ? null : $"%{busca}%");
+        AdicionarParametro(
+            comando,
+            "@busca",
+            string.IsNullOrWhiteSpace(busca) ? null : $"%{busca}%"
+        );
 
         AdicionarParametro(comando, "@idPlataforma", idPlataforma);
-        AdicionarParametro(comando, "@incluirInativos", incluirInativos ? 1 : 0);
+        AdicionarParametro(
+            comando,
+            "@incluirInativos",
+            incluirInativos ? 1 : 0
+        );
 
         if (idsJogos != null)
         {
             for (int i = 0; i < idsJogos.Count; i++)
             {
-                AdicionarParametro(comando, $"@idJogo{i}", idsJogos[i]);
+                AdicionarParametro(
+                    comando,
+                    $"@idJogo{i}",
+                    idsJogos[i]
+                );
             }
         }
 
@@ -153,6 +176,57 @@ public class JogoRepository : RepositoryBase, IJogoRepository
             return null;
 
         return MapearJogo(reader);
+    }
+
+    public async Task<List<Jogo>> BuscarPorIdsAsync(List<int> ids)
+    {
+        if (ids.Count == 0)
+            return new List<Jogo>();
+
+        await using var conexao = await AbrirConexaoAsync();
+
+        var parametrosIds = new List<string>();
+
+        await using var comando = CriarComando(conexao, "");
+
+        for (int i = 0; i < ids.Count; i++)
+        {
+            string nomeParametro = $"@idJogo{i}";
+            parametrosIds.Add(nomeParametro);
+
+            AdicionarParametro(
+                comando,
+                nomeParametro,
+                ids[i]
+            );
+        }
+
+        comando.CommandText = $"""
+            SELECT
+                co_seq_jogo,
+                no_jogo,
+                ds_jogo,
+                nu_ano_lancamento,
+                vl_preco,
+                qt_estoque,
+                st_ativo,
+                dt_cadastro,
+                co_plataforma,
+                co_condicao_jogo
+            FROM tb_jogo
+            WHERE co_seq_jogo IN ({string.Join(", ", parametrosIds)});
+            """;
+
+        var jogos = new List<Jogo>();
+
+        await using var reader = await comando.ExecuteReaderAsync();
+
+        while (await reader.ReadAsync())
+        {
+            jogos.Add(MapearJogo(reader));
+        }
+
+        return jogos;
     }
 
     public async Task<bool> PossuiJogosAsync(int idPlataforma)
@@ -272,19 +346,27 @@ public class JogoRepository : RepositoryBase, IJogoRepository
             Descricao = reader.IsDBNull(reader.GetOrdinal("ds_jogo"))
                 ? null
                 : reader.GetString(reader.GetOrdinal("ds_jogo")),
-            AnoLancamento = reader.GetInt32(reader.GetOrdinal("nu_ano_lancamento")),
+            AnoLancamento = reader.GetInt32(
+                reader.GetOrdinal("nu_ano_lancamento")
+            ),
             Preco = reader.GetDecimal(reader.GetOrdinal("vl_preco")),
             Estoque = reader.GetInt32(reader.GetOrdinal("qt_estoque")),
             Ativo = reader.GetBoolean(reader.GetOrdinal("st_ativo")),
-            DataCadastro = reader.GetDateTime(reader.GetOrdinal("dt_cadastro")),
-            IdPlataforma = reader.GetInt32(reader.GetOrdinal("co_plataforma")),
-            IdCondicaoJogo = reader.GetInt32(reader.GetOrdinal("co_condicao_jogo"))
+            DataCadastro = reader.GetDateTime(
+                reader.GetOrdinal("dt_cadastro")
+            ),
+            IdPlataforma = reader.GetInt32(
+                reader.GetOrdinal("co_plataforma")
+            ),
+            IdCondicaoJogo = reader.GetInt32(
+                reader.GetOrdinal("co_condicao_jogo")
+            )
         };
     }
 
     public async Task<bool> BaixarEstoqueAsync(
-    int idJogo,
-    int quantidade)
+        int idJogo,
+        int quantidade)
     {
         const string sql = """
             UPDATE tb_jogo

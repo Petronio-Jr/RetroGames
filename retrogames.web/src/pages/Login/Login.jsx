@@ -1,7 +1,24 @@
 import { useState } from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import {
+  Link,
+  useNavigate,
+  useSearchParams,
+} from 'react-router-dom'
+
 import useAutenticacao from '../../hooks/useAutenticacao'
 import { obterMensagemErro } from '../../api/erros'
+
+function obterDestinoValido(destino) {
+  if (
+    destino &&
+    destino.startsWith('/') &&
+    !destino.startsWith('//')
+  ) {
+    return destino
+  }
+
+  return '/'
+}
 
 function Login() {
   const [email, setEmail] = useState('')
@@ -14,6 +31,10 @@ function Login() {
 
   const { entrar } = useAutenticacao()
 
+  const voltarPara = obterDestinoValido(
+    parametros.get('voltarPara')
+  )
+
   async function lidarComEnvio(evento) {
     evento.preventDefault()
 
@@ -23,14 +44,7 @@ function Login() {
     try {
       await entrar(email, senha)
 
-      const voltarPara = parametros.get('voltarPara')
-
-      const destinoValido =
-        voltarPara &&
-        voltarPara.startsWith('/') &&
-        !voltarPara.startsWith('//')
-
-      navegar(destinoValido ? voltarPara : '/')
+      navegar(voltarPara)
     } catch (erro) {
       setErro(obterMensagemErro(erro))
     } finally {
@@ -38,12 +52,15 @@ function Login() {
     }
   }
 
+  const linkCadastro = voltarPara !== '/'
+    ? `/cadastro?voltarPara=${encodeURIComponent(voltarPara)}`
+    : '/cadastro'
+
   return (
     <div className="row justify-content-center">
       <div className="col-md-6 col-lg-4">
         <div className="card shadow-sm mt-5">
           <div className="card-body p-4">
-
             <h2 className="text-center mb-4">
               Entrar
             </h2>
@@ -59,7 +76,7 @@ function Login() {
                   className="form-control"
                   id="email"
                   value={email}
-                  onChange={(evento) => setEmail(evento.target.value)}
+                  onChange={evento => setEmail(evento.target.value)}
                   required
                 />
               </div>
@@ -74,7 +91,7 @@ function Login() {
                   className="form-control"
                   id="senha"
                   value={senha}
-                  onChange={(evento) => setSenha(evento.target.value)}
+                  onChange={evento => setSenha(evento.target.value)}
                   required
                 />
               </div>
@@ -98,9 +115,10 @@ function Login() {
 
             <p className="text-center mb-0">
               Ainda não possui uma conta?{' '}
-              <Link to="/cadastro">Cadastre-se</Link>
+              <Link to={linkCadastro}>
+                Cadastre-se
+              </Link>
             </p>
-
           </div>
         </div>
       </div>

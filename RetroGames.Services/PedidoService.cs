@@ -133,9 +133,8 @@ public class PedidoService : IPedidoService
         }
     }
 
-   
     public async Task<List<PedidoClienteServiceModel>> ListarMeusAsync(
-    int idUsuario)
+        int idUsuario)
     {
         // Busca somente os pedidos pertencentes ao usuário.
         var pedidos = await _repositorio.Pedido
@@ -154,22 +153,17 @@ public class PedidoService : IPedidoService
         var situacoes = await _repositorio.SituacaoPedido
             .ListarAsync();
 
-        // Busca os jogos associados aos itens.
+        // Busca todos os jogos em uma única consulta.
         var idsJogos = itensPedido
             .Select(i => i.IdJogo)
             .Distinct()
             .ToList();
 
-        var jogos = new List<Jogo>();
+        var jogos = await _repositorio.Jogo
+            .BuscarPorIdsAsync(idsJogos);
 
-        foreach (var idJogo in idsJogos)
-        {
-            var jogo = await _repositorio.Jogo
-                .BuscarPorIdAsync(idJogo);
-
-            if (jogo != null)
-                jogos.Add(jogo);
-        }
+        // Cria um dicionário para localizar os jogos rapidamente.
+        var jogosPorId = jogos.ToDictionary(j => j.Id);
 
         // Combina os dados utilizando LINQ.
         var resultado = pedidos
@@ -191,9 +185,12 @@ public class PedidoService : IPedidoService
                     {
                         IdJogo = i.IdJogo,
 
-                        NomeJogo = jogos
-                            .FirstOrDefault(j => j.Id == i.IdJogo)
-                            ?.Nome ?? string.Empty,
+                        NomeJogo = jogosPorId.TryGetValue(
+                            i.IdJogo,
+                            out var jogo
+                        )
+                            ? jogo.Nome
+                            : string.Empty,
 
                         Quantidade = i.Quantidade,
                         ValorUnitario = i.ValorUnitario
@@ -204,5 +201,4 @@ public class PedidoService : IPedidoService
 
         return resultado;
     }
-
 }

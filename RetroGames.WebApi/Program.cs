@@ -27,7 +27,9 @@ builder.Services.AddRepositorios(connectionString);
 builder.Services.AddServicosDeNegocio();
 
 // Autenticação e autorização.
-builder.Services.AddAutenticacao();
+builder.Services.AddAutenticacao(
+    builder.Environment.IsDevelopment()
+);
 builder.Services.AddAutorizacao();
 
 // Permite acessar o usuário da requisição atual.

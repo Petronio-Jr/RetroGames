@@ -25,10 +25,11 @@ public class FinalizarPedidoRequestValidator
             });
 
         RuleFor(x => x.Itens)
-            .Must(itens => itens
-                .Select(item => item.IdJogo)
-                .Distinct()
-                .Count() == itens.Count)
+            .Must(itens =>
+                itens == null ||
+                itens.Select(item => item.IdJogo)
+                    .Distinct()
+                    .Count() == itens.Count)
             .WithMessage("Não repita jogos no mesmo pedido.");
     }
 }

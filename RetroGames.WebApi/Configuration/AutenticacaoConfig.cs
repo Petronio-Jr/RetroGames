@@ -7,7 +7,8 @@ namespace RetroGames.WebApi.Configuration;
 public static class AutenticacaoConfig
 {
     public static IServiceCollection AddAutenticacao(
-        this IServiceCollection services)
+        this IServiceCollection services,
+        bool ambienteDesenvolvimento = false)
     {
         services
             .AddAuthentication(
@@ -18,6 +19,10 @@ public static class AutenticacaoConfig
                 opcoes.Cookie.Name = "retrogames.sessao";
                 opcoes.Cookie.HttpOnly = true;
                 opcoes.Cookie.SameSite = SameSiteMode.Strict;
+
+                opcoes.Cookie.SecurePolicy = ambienteDesenvolvimento
+                    ? CookieSecurePolicy.SameAsRequest
+                    : CookieSecurePolicy.Always;
 
                 opcoes.ExpireTimeSpan = TimeSpan.FromHours(2);
                 opcoes.SlidingExpiration = true;
