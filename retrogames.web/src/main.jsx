@@ -7,6 +7,7 @@ import 'bootstrap/dist/js/bootstrap.bundle.min.js'
 
 import './index.css'
 import './tema-synthwave.css'
+import './tema-mobile.css'
 
 import App from './App'
 import AutenticacaoProvider from './contexts/AutenticacaoProvider'

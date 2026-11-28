@@ -141,7 +141,7 @@ function FormularioJogo() {
   }
 
   return (
-    <main className="container py-4">
+    <div>
       <div className="mb-4">
         <Link
           to="/admin/jogos"
@@ -219,6 +219,7 @@ function FormularioJogo() {
                 <input
                   id="anoLancamento"
                   type="number"
+                  inputMode="numeric"
                   className={`form-control ${errosCampos.AnoLancamento || errosCampos.anoLancamento ? 'is-invalid' : ''}`}
                   value={anoLancamento}
                   onChange={(evento) => setAnoLancamento(evento.target.value)}
@@ -239,6 +240,7 @@ function FormularioJogo() {
                 <input
                   id="preco"
                   type="number"
+                  inputMode="decimal"
                   step="0.01"
                   className={`form-control ${errosCampos.Preco || errosCampos.preco ? 'is-invalid' : ''}`}
                   value={preco}
@@ -260,6 +262,7 @@ function FormularioJogo() {
                 <input
                   id="estoque"
                   type="number"
+                  inputMode="numeric"
                   className={`form-control ${errosCampos.Estoque || errosCampos.estoque ? 'is-invalid' : ''}`}
                   value={estoque}
                   onChange={(evento) => setEstoque(evento.target.value)}
@@ -400,7 +403,7 @@ function FormularioJogo() {
           </Link>
         </div>
       </form>
-    </main>
+    </div>
   )
 }
 

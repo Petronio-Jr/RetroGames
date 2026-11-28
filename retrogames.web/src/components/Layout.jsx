@@ -1,6 +1,8 @@
 
-import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { useEffect } from 'react'
+import { Link, NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import useAutenticacao from '../hooks/useAutenticacao'
+import useCarrinho from '../hooks/useCarrinho'
 import FundoInterativo from './FundoInterativo'
 
 function Layout() {
@@ -14,6 +16,19 @@ function Layout() {
 
   const ehCliente = usuario?.perfil === 'Cliente'
   const navegar = useNavigate()
+  const { pathname } = useLocation()
+  const { itens } = useCarrinho()
+
+  const quantidadeNoCarrinho = itens.reduce(
+    (soma, item) => soma + (Number(item.quantidade) || 0),
+    0
+  )
+
+  // O menu do Bootstrap não sabe que a página mudou: fechamos aqui
+  // para ele não ficar aberto por cima do conteúdo no celular.
+  useEffect(() => {
+    document.getElementById('menuNavegacao')?.classList.remove('show')
+  }, [pathname])
 
   async function lidarComSaida() {
     try {
@@ -32,6 +47,23 @@ function Layout() {
           <Link className="navbar-brand fw-bold" to="/">
             RetroGames
           </Link>
+
+          {/* Atalho do carrinho: fica sempre visível, inclusive no celular */}
+          {!ehAdministrador && (
+            <Link
+              to="/carrinho"
+              className="carrinho-atalho ms-auto me-2 d-lg-none"
+              aria-label={`Carrinho, ${quantidadeNoCarrinho} item(ns)`}
+            >
+              <span aria-hidden="true">🛒</span>
+
+              {quantidadeNoCarrinho > 0 && (
+                <span className="carrinho-contador">
+                  {quantidadeNoCarrinho}
+                </span>
+              )}
+            </Link>
+          )}
 
           <button
             className="navbar-toggler"
@@ -61,7 +93,7 @@ function Layout() {
 
               {/* Visitantes e clientes podem acessar o carrinho */}
               {!ehAdministrador && (
-                <li className="nav-item">
+                <li className="nav-item d-none d-lg-block">
                   <NavLink
                     className={({ isActive }) =>
                       `nav-link ${isActive ? 'active' : ''}`
@@ -69,6 +101,11 @@ function Layout() {
                     to="/carrinho"
                   >
                     Carrinho
+                    {quantidadeNoCarrinho > 0 && (
+                      <span className="carrinho-contador ms-2">
+                        {quantidadeNoCarrinho}
+                      </span>
+                    )}
                   </NavLink>
                 </li>
               )}
@@ -128,7 +165,7 @@ function Layout() {
 
                     <li className="nav-item">
                       <button
-                        className="btn btn-outline-light btn-sm"
+                        className="btn btn-outline-light btn-sm botao-sair"
                         onClick={lidarComSaida}
                       >
                         Sair

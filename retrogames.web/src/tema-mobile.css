@@ -1,0 +1,181 @@
+/* ==========================================================================
+   Ajustes para celular (importado depois de tema-synthwave.css)
+   ========================================================================== */
+
+/* Altura da tela: 100dvh acompanha a barra do navegador do celular */
+body { min-height: 100vh; min-height: 100dvh; }
+#root { min-height: 100vh; min-height: 100dvh; }
+
+/* Efeitos de "passar o mouse" só onde existe mouse (no toque eles ficam grudados) */
+@media (hover: none) {
+  .card-jogo:hover {
+    transform: none;
+    box-shadow: none !important;
+    border-color: var(--s-line);
+  }
+  .btn-primary:hover, .btn-success:hover { transform: none; }
+  .hero-botao:hover { transform: none; }
+  .capa:hover .capa-cartucho { transform: none; }
+}
+
+/* Filtros recolhíveis: no computador ficam sempre abertos */
+@media (min-width: 768px) {
+  #filtrosAvancados.collapse:not(.show) { display: block; }
+}
+
+/* Atalho do carrinho na barra (celular) */
+.carrinho-atalho {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  font-size: 1.35rem;
+  text-decoration: none;
+}
+.carrinho-contador {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.35rem;
+  height: 1.35rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: var(--s-magenta, #ff3fd8);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1;
+}
+.carrinho-atalho .carrinho-contador {
+  position: absolute;
+  top: 2px;
+  right: 0;
+}
+
+/* Barra de ação fixa embaixo (comprar / finalizar) */
+.barra-acao-fixa { margin-top: 1rem; }
+
+/* Tabelas viram cartões (use class="tabela-cartoes" e data-label nas células) */
+@media (max-width: 767.98px) {
+  .tabela-cartoes thead { display: none; }
+  .tabela-cartoes,
+  .tabela-cartoes tbody,
+  .tabela-cartoes tr,
+  .tabela-cartoes td { display: block; width: 100%; }
+  .tabela-cartoes tr {
+    margin-bottom: 0.9rem;
+    padding: 0.4rem 0.9rem;
+    border: 1px solid var(--s-line);
+    border-radius: 16px;
+    background: rgba(10, 6, 44, 0.85);
+  }
+  .tabela-cartoes td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.5rem 0;
+    border: 0;
+    background: transparent !important;
+    text-align: right;
+  }
+  .tabela-cartoes td::before {
+    content: attr(data-label);
+    flex-shrink: 0;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--s-muted);
+    text-align: left;
+  }
+  .tabela-cartoes td[data-label="Ações"],
+  .tabela-cartoes td[data-label="Ações"]::before { padding-top: 0.7rem; }
+  .tabela-cartoes td[data-label="Ações"] > div { width: 100%; }
+}
+
+@media (max-width: 767.98px) {
+  /* Texto legível e alvos de toque de ~44px */
+  .form-label { font-size: 0.78rem; }
+  .card-title { font-size: 0.75rem; }
+  .card-jogo { padding: 0.5rem; }
+  .card-jogo p { font-size: 0.8rem; }
+  .card h5.text-success { font-size: 1.25rem; }
+  .capa-cartucho-nome { font-size: 0.6rem; }
+  .capa-cartucho-plataforma { font-size: 0.6rem; }
+  .capa-cartucho-arte { font-size: 0.6rem; }
+
+  .btn, .btn-sm, .form-control, .form-select { min-height: 44px; }
+  .btn-sm { padding-block: 0.5rem; }
+  .page-link { min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; }
+
+  .botao-sair { width: 100%; margin-top: 0.5rem; }
+
+  /* Sem desfoque pesado nos cartões: rolagem mais fluida em celular fraco */
+  .card, .card-jogo {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    background: rgba(10, 6, 44, 0.92);
+  }
+
+  /* Barra fixa embaixo da tela, respeitando a área segura do iPhone */
+  .barra-acao-fixa {
+    position: sticky;
+    bottom: 0;
+    z-index: 1020;
+    margin: 1rem -12px 0;
+    padding: 0.75rem 12px calc(0.75rem + env(safe-area-inset-bottom));
+    background: rgba(7, 5, 31, 0.95);
+    border-top: 1px solid var(--s-line);
+  }
+  /* No carrinho a barra é um .card: deixa reta, rente às bordas e baixa */
+  .card.barra-acao-fixa {
+    border-radius: 0;
+    border-width: 1px 0 0;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .card.barra-acao-fixa .card-body { padding: 0.6rem 12px; }
+  .barra-carrinho-acoes { flex: 1; }
+  .barra-carrinho-acoes .btn { flex: 1; }
+
+  /* Capa do cartucho: cabe na coluna do card (antes estourava a largura) */
+  .card-jogo .capa {
+    aspect-ratio: 1 / 1.05;
+    min-height: 0;
+    width: 100%;
+    border-radius: 12px;
+  }
+  .card-jogo .capa-cartucho {
+    min-width: 0;
+    width: 74%;
+    max-width: 100%;
+    padding: 8px 8px 10px;
+  }
+  .card-jogo .capa-cartucho-nome,
+  .card-jogo .capa-cartucho-arte { font-size: 0.55rem; }
+  .barra-acao-fixa > .btn { width: 100%; }
+
+  /* Paginação compacta */
+  .paginacao-numeros { display: none; }
+  .paginacao-resumo { display: inline-flex !important; }
+}
+
+.paginacao-resumo {
+  display: none;
+  align-items: center;
+  padding: 0 0.9rem;
+  color: var(--s-muted);
+  font-size: 0.85rem;
+}
+
+/* Barra do carrinho: total à esquerda, ações à direita */
+.barra-carrinho {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.barra-carrinho-total { display: flex; flex-direction: column; line-height: 1.15; }
+.barra-carrinho-acoes { display: flex; gap: 0.5rem; }

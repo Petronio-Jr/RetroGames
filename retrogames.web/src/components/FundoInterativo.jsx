@@ -27,7 +27,10 @@ function FundoInterativo() {
   useEffect(() => {
     const canvas = canvasRef.current
     const ctx = canvas.getContext('2d')
-    const reduzirMovimento = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    // No celular não há mouse: o efeito só gasta bateria. Desenhamos um quadro estático.
+    const reduzirMovimento =
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches ||
+      window.matchMedia('(pointer: coarse)').matches
 
     let largura = 0
     let altura = 0

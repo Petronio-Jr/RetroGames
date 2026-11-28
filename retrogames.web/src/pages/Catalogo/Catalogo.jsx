@@ -165,6 +165,10 @@ function Catalogo() {
     parametros.set('pagina', String(novaPagina))
 
     setSearchParams(parametros)
+
+    document
+      .getElementById('jogos')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   function limparFiltros() {
@@ -173,18 +177,20 @@ function Catalogo() {
   }
 
   return (
-    <div className="container py-4">
+    <div>
       <HeroCatalogo />
 
       <form id="jogos" onSubmit={pesquisar} className="row g-3 mb-4">
-        <div className="col-md-5">
+        <div className="col-12">
           <label htmlFor="busca" className="form-label">
             Buscar jogo
           </label>
 
           <input
             id="busca"
-            type="text"
+            type="search"
+            enterKeyHint="search"
+            autoComplete="off"
             className="form-control"
             placeholder="Digite o nome do jogo..."
             value={busca}
@@ -192,7 +198,22 @@ function Catalogo() {
           />
         </div>
 
-        <div className="col-md-3">
+        <div className="col-12 d-md-none">
+          <button
+            type="button"
+            className="btn btn-outline-secondary w-100"
+            data-bs-toggle="collapse"
+            data-bs-target="#filtrosAvancados"
+            aria-controls="filtrosAvancados"
+            aria-expanded="false"
+          >
+            Filtros (plataforma e gênero)
+          </button>
+        </div>
+
+        <div id="filtrosAvancados" className="col-12 collapse">
+        <div className="row g-3">
+        <div className="col-md-6">
           <label htmlFor="plataforma" className="form-label">
             Plataforma
           </label>
@@ -217,7 +238,7 @@ function Catalogo() {
           </select>
         </div>
 
-        <div className="col-md-3">
+        <div className="col-md-6">
           <label htmlFor="genero" className="form-label">
             Gênero
           </label>
@@ -242,19 +263,20 @@ function Catalogo() {
           </select>
         </div>
 
-        <div className="col-md-1 d-flex align-items-end">
-          <button type="submit" className="btn btn-primary w-100">
-            Buscar
-          </button>
+        </div>
         </div>
 
-        <div className="col-12">
+        <div className="col-12 d-flex gap-2">
+          <button type="submit" className="btn btn-primary flex-grow-1">
+            Buscar
+          </button>
+
           <button
             type="button"
-            className="btn btn-outline-secondary btn-sm"
+            className="btn btn-outline-secondary"
             onClick={limparFiltros}
           >
-            Limpar filtros
+            Limpar
           </button>
         </div>
       </form>
@@ -299,9 +321,9 @@ function Catalogo() {
         </EstadoVazio>
       ) : (
         <>
-          <div className="row g-4">
+          <div className="row g-2 g-md-4" id="lista-jogos">
             {jogos.map((jogo) => (
-              <div className="col-12 col-sm-6 col-lg-4 col-xl-3" key={jogo.id}>
+              <div className="col-6 col-md-4 col-xl-3" key={jogo.id}>
                 <CardJogo jogo={jogo} />
               </div>
             ))}

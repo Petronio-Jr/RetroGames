@@ -10,7 +10,7 @@ function Paginacao({ pagina, totalPaginas, aoMudar }) {
 
   return (
     <nav aria-label="Navegação do catálogo">
-      <ul className="pagination justify-content-center mt-4">
+      <ul className="pagination justify-content-center flex-wrap mt-4">
         <li className={`page-item ${pagina === 1 ? 'disabled' : ''}`}>
           <button
             className="page-link"
@@ -21,10 +21,14 @@ function Paginacao({ pagina, totalPaginas, aoMudar }) {
           </button>
         </li>
 
+        <li className="paginacao-resumo" aria-live="polite">
+          Página {pagina} de {totalPaginas}
+        </li>
+
         {paginas.map((numero) => (
           <li
             key={numero}
-            className={`page-item ${pagina === numero ? 'active' : ''}`}
+            className={`page-item paginacao-numeros ${pagina === numero ? 'active' : ''}`}
           >
             <button
               className="page-link"

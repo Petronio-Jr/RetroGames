@@ -222,7 +222,7 @@ function Plataforma() {
 
       {!carregando && !erroLista && plataformas.length > 0 && (
         <div className="table-responsive">
-          <table className="table table-striped table-hover">
+          <table className="table table-striped table-hover tabela-cartoes">
             <thead>
               <tr>
                 <th>Nome</th>
@@ -234,13 +234,14 @@ function Plataforma() {
             <tbody>
               {plataformas.map((plataforma) => (
                 <tr key={plataforma.id}>
-                  <td>{plataforma.nome}</td>
-                  <td>{plataforma.fabricante}</td>
-                  <td>{plataforma.anoLancamento}</td>
-                  <td>
+                  <td data-label="Nome">{plataforma.nome}</td>
+                  <td data-label="Fabricante">{plataforma.fabricante}</td>
+                  <td data-label="Ano">{plataforma.anoLancamento}</td>
+                  <td data-label="Ações">
+                    <div className="d-flex gap-2">
                     <button
                       type="button"
-                      className="btn btn-sm btn-outline-primary me-2"
+                      className="btn btn-sm btn-outline-primary"
                       onClick={() => editarPlataforma(plataforma)}
                     >
                       Editar
@@ -253,6 +254,7 @@ function Plataforma() {
                     >
                       Excluir
                     </button>
+                    </div>
                   </td>
                 </tr>
               ))}

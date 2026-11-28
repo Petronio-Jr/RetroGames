@@ -52,7 +52,7 @@ function DetalheJogo() {
 
   if (erro) {
     return (
-      <div className="container py-4">
+      <div>
         <MensagemErro
           mensagem={erro}
           aoTentarNovamente={() => window.location.reload()}
@@ -117,7 +117,7 @@ function DetalheJogo() {
   }
 
   return (
-    <main className="container py-4">
+    <div>
       <Link to="/" className="btn btn-outline-secondary mb-4">
         ← Voltar ao catálogo
       </Link>
@@ -199,7 +199,7 @@ function DetalheJogo() {
 
           <hr />
 
-          <div>
+          <div className="barra-acao-fixa">
             <button
               className="btn btn-success w-100"
               disabled={
@@ -227,7 +227,7 @@ function DetalheJogo() {
           </div>
         </div>
       </div>
-    </main>
+    </div>
   )
 }
 

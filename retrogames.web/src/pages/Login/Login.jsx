@@ -73,6 +73,8 @@ function Login() {
 
                 <input
                   type="email"
+                  autoComplete="email"
+                  inputMode="email"
                   className="form-control"
                   id="email"
                   value={email}
@@ -88,6 +90,7 @@ function Login() {
 
                 <input
                   type="password"
+                  autoComplete="current-password"
                   className="form-control"
                   id="senha"
                   value={senha}

@@ -23,11 +23,12 @@ function CardJogo({ jogo }) {
 
         <p className="text-muted mb-2">Ano: {jogo.ano}</p>
 
-        <p className="mb-2">
+        {/* Condição e gêneros: só em telas maiores; no celular ficam no detalhe */}
+        <p className="mb-2 d-none d-md-block">
           Condição: {jogo.descricaoCondicao}
         </p>
 
-        <p className="mb-2">
+        <p className="mb-2 d-none d-md-block">
           Gêneros: {Array.isArray(jogo.generos)
             ? jogo.generos
                 .map(genero =>
@@ -53,7 +54,7 @@ function CardJogo({ jogo }) {
 
         <Link
           to={`/jogos/${jogo.id}`}
-          className="btn btn-primary mt-auto mt-3"
+          className="btn btn-primary mt-auto mt-3 btn-toque"
         >
           Ver detalhes
         </Link>

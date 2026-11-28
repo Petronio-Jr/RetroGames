@@ -48,7 +48,7 @@ function Carrinho() {
   }
 
   return (
-    <div className="container py-4">
+    <div className="pagina-carrinho">
       <div className="mb-4">
         <h1>Meu carrinho</h1>
 
@@ -85,6 +85,10 @@ function Carrinho() {
         </div>
       ) : (
         <>
+          <Link to="/" className="btn btn-outline-secondary mb-3 d-md-none">
+            ← Continuar comprando
+          </Link>
+
           <div className="card shadow-sm mb-4">
             <div className="card-body">
               {itens.map(item => (
@@ -163,40 +167,42 @@ function Carrinho() {
             </div>
           </div>
 
-          <div className="card shadow-sm">
+          <div className="card shadow-sm barra-acao-fixa">
             <div className="card-body">
-              <div className="d-flex justify-content-between align-items-center mb-3">
-                <h2 className="h5 mb-0">
-                  Total da compra
-                </h2>
+              <div className="barra-carrinho">
+                <div className="barra-carrinho-total">
+                  <span className="text-muted small">
+                    Total da compra
+                  </span>
 
-                <span className="fs-4 fw-bold">
-                  {formatarPreco(total)}
-                </span>
-              </div>
+                  <span className="fs-4 fw-bold">
+                    {formatarPreco(total)}
+                  </span>
+                </div>
 
-              <div className="d-flex justify-content-between flex-wrap gap-2">
-                <Link
-                  to="/"
-                  className="btn btn-outline-secondary"
-                >
-                  Continuar comprando
-                </Link>
+                <div className="barra-carrinho-acoes">
+                  <Link
+                    to="/"
+                    className="btn btn-outline-secondary d-none d-md-inline-flex align-items-center"
+                  >
+                    Continuar comprando
+                  </Link>
 
-                <button
-                  type="button"
-                  className="btn btn-primary"
-                  disabled={
-                    finalizando ||
-                    carregando ||
-                    itens.length === 0
-                  }
-                  onClick={finalizarCompra}
-                >
-                  {finalizando
-                    ? 'Finalizando compra...'
-                    : 'Finalizar compra'}
-                </button>
+                  <button
+                    type="button"
+                    className="btn btn-primary"
+                    disabled={
+                      finalizando ||
+                      carregando ||
+                      itens.length === 0
+                    }
+                    onClick={finalizarCompra}
+                  >
+                    {finalizando
+                      ? 'Finalizando...'
+                      : 'Finalizar compra'}
+                  </button>
+                </div>
               </div>
             </div>
           </div>

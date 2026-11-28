@@ -90,7 +90,7 @@ function MeusPedidos() {
                 <h3 className="h6 mb-3">Itens do pedido</h3>
 
                 <div className="table-responsive">
-                  <table className="table align-middle">
+                  <table className="table align-middle tabela-cartoes">
                     <thead>
                       <tr>
                         <th>Jogo</th>
@@ -103,10 +103,10 @@ function MeusPedidos() {
                     <tbody>
                       {pedido.itens.map((item) => (
                         <tr key={item.idJogo}>
-                          <td>{item.nomeJogo}</td>
-                          <td>{item.quantidade}</td>
-                          <td>{formatarPreco(item.valorUnitario)}</td>
-                          <td>
+                          <td data-label="Jogo">{item.nomeJogo}</td>
+                          <td data-label="Quantidade">{item.quantidade}</td>
+                          <td data-label="Valor unitário">{formatarPreco(item.valorUnitario)}</td>
+                          <td data-label="Subtotal">
                             {formatarPreco(
                               item.quantidade * item.valorUnitario
                             )}

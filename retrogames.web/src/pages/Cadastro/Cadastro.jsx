@@ -74,6 +74,7 @@ function Cadastro() {
 
                 <input
                   type="text"
+                  autoComplete="name"
                   className="form-control"
                   id="nome"
                   value={nome}
@@ -89,6 +90,8 @@ function Cadastro() {
 
                 <input
                   type="email"
+                  autoComplete="email"
+                  inputMode="email"
                   className="form-control"
                   id="email"
                   value={email}
@@ -105,6 +108,7 @@ function Cadastro() {
 
                 <input
                   type="password"
+                  autoComplete="new-password"
                   className="form-control"
                   id="senha"
                   value={senha}

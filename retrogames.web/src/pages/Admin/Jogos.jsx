@@ -119,7 +119,7 @@ function Jogos() {
   }
 
   return (
-    <main className="container py-4">
+    <div>
       <div className="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
         <div>
           <h1 className="h2 mb-1">Administração de Jogos</h1>
@@ -193,7 +193,7 @@ function Jogos() {
           </div>
 
           <div className="table-responsive">
-            <table className="table table-striped table-hover align-middle">
+            <table className="table table-striped table-hover align-middle tabela-cartoes">
               <thead>
                 <tr>
                   <th>Nome</th>
@@ -209,13 +209,13 @@ function Jogos() {
               <tbody>
                 {jogos.map((jogo) => (
                   <tr key={jogo.id}>
-                    <td>{jogo.nome}</td>
-                    <td>{jogo.nomePlataforma}</td>
-                    <td>{jogo.ano}</td>
-                    <td>{formatarPreco(jogo.preco)}</td>
-                    <td>{jogo.estoque}</td>
+                    <td data-label="Nome">{jogo.nome}</td>
+                    <td data-label="Plataforma">{jogo.nomePlataforma}</td>
+                    <td data-label="Ano">{jogo.ano}</td>
+                    <td data-label="Preço">{formatarPreco(jogo.preco)}</td>
+                    <td data-label="Estoque">{jogo.estoque}</td>
 
-                    <td>
+                    <td data-label="Situação">
                       {jogo.ativo ? (
                         <span className="badge bg-success">
                           Ativo
@@ -227,7 +227,7 @@ function Jogos() {
                       )}
                     </td>
 
-                    <td>
+                    <td data-label="Ações">
                       <div className="d-flex gap-2">
                         <Link
                           to={`/admin/jogos/${jogo.id}/editar`}
@@ -263,7 +263,7 @@ function Jogos() {
           />
         </>
       )}
-    </main>
+    </div>
   )
 }
 
