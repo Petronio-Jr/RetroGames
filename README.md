@@ -4,6 +4,10 @@ Loja virtual de jogos retrô usados, desenvolvida como projeto de estudo de dese
 
 O sistema permite consultar jogos, visualizar detalhes, realizar cadastro e login, administrar o catálogo e efetuar compras.
 
+![Tela do catálogo do RetroGames, com o título pixelado, a busca por nome, os filtros de plataforma e gênero e os primeiros jogos listados](docs/imagens/tela-catalogo.png)
+
+*Tela inicial do catálogo, com busca e filtros por plataforma e gênero.*
+
 ## 1. Tecnologias utilizadas
 
 ### Backend
@@ -182,6 +186,11 @@ dotnet test
 Os testes utilizam xUnit v3 e Moq para verificar as regras de negócio sem depender diretamente do banco de dados.
 
 Para gerar a versão de produção do frontend:
+
+```bash
+cd retrogames.web
+npm run build
+```
 
 ```bash
 cd retrogames.web
