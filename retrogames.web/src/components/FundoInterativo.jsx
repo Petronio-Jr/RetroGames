@@ -2,19 +2,20 @@ import { useEffect, useRef } from 'react'
 
 // Fundo retrô em canvas:
 //  - grade de pontos que acende perto do mouse
-//  - sprites de 8 bits que flutuam e fogem do ponteiro
+//  - formas de 8 bits (estrela, anel, tetris...) que flutuam e fogem do ponteiro
 //  - clique solta uma explosão de pixels
 // Tudo roda atrás do site (pointer-events: none), então não atrapalha cliques.
 
-const CORES = ['#d02a35', '#f7c948', '#39c46a', '#3a6fe0', '#ffb000']
+const CORES = ['#ffffff', '#ffd23f', '#3ee6ff', '#ff3fd8', '#9d6bff']
 
-// Desenhos de 7x7 pixels ('#' = pixel aceso)
+// Desenhos em pixels ('#' = pixel aceso), cada um com a sua cor
 const SPRITES = [
-  ['.##.##.', '#######', '#######', '#######', '.#####.', '..###..', '...#...'], // coração
-  ['...#...', '...#...', '#######', '.#####.', '..###..', '.##.##.', '.#...#.'], // estrela
-  ['..###..', '..###..', '#######', '#######', '#######', '..###..', '..###..'], // direcional
-  ['...#...', '..###..', '.#####.', '#######', '.#####.', '..###..', '...#...'], // diamante
-  ['..###..', '.#...#.', '#.....#', '#.....#', '#.....#', '.#...#.', '..###..'], // anel
+  { cor: '#ffffff', forma: ['...#...', '...#...', '#######', '.#####.', '..###..', '.##.##.', '.#...#.'] }, // estrela
+  { cor: '#ffffff', forma: ['..###..', '.#...#.', '#.....#', '#.....#', '#.....#', '.#...#.', '..###..'] }, // anel
+  { cor: '#ffd23f', forma: ['..####.', '..####.', '####...', '####...'] }, // tetris S
+  { cor: '#ffd23f', forma: ['#######', '#######', '..###..', '..###..'] }, // tetris T
+  { cor: '#3ee6ff', forma: ['..###..', '..###..', '#######', '#######', '#######', '..###..', '..###..'] }, // direcional
+  { cor: '#ff3fd8', forma: ['...#...', '..###..', '.#####.', '#######', '.#####.', '..###..', '...#...'] }, // diamante
 ]
 
 const ESPACO_GRADE = 34
@@ -38,8 +39,7 @@ function FundoInterativo() {
     function criarSprite(aleatorioY = true) {
       const escala = 3 + Math.floor(Math.random() * 3) // 3 a 5 px por pixel do desenho
       return {
-        forma: SPRITES[Math.floor(Math.random() * SPRITES.length)],
-        cor: CORES[Math.floor(Math.random() * CORES.length)],
+        ...SPRITES[Math.floor(Math.random() * SPRITES.length)],
         escala,
         x: Math.random() * largura,
         y: aleatorioY ? Math.random() * altura : altura + 40,
@@ -84,8 +84,8 @@ function FundoInterativo() {
       // brilho âmbar que segue o mouse
       if (mouse.x > -1000) {
         const brilho = ctx.createRadialGradient(mouse.x, mouse.y, 0, mouse.x, mouse.y, 260)
-        brilho.addColorStop(0, 'rgba(255, 176, 0, 0.16)')
-        brilho.addColorStop(1, 'rgba(255, 176, 0, 0)')
+        brilho.addColorStop(0, 'rgba(255, 63, 216, 0.18)')
+        brilho.addColorStop(1, 'rgba(255, 63, 216, 0)')
         ctx.fillStyle = brilho
         ctx.fillRect(0, 0, largura, altura)
       }
@@ -100,16 +100,18 @@ function FundoInterativo() {
           if (distancia < RAIO_MOUSE) {
             const forca = 1 - distancia / RAIO_MOUSE
             const lado = 2 + Math.round(forca * 4)
-            ctx.fillStyle = `rgba(255, 176, 0, ${0.25 + forca * 0.75})`
+            ctx.fillStyle = `rgba(62, 230, 255, ${0.25 + forca * 0.75})`
             ctx.fillRect(Math.round(x - lado / 2), Math.round(y - lado / 2), lado, lado)
           } else {
-            ctx.fillStyle = 'rgba(179, 169, 204, 0.16)'
+            ctx.fillStyle = 'rgba(185, 179, 221, 0.15)'
             ctx.fillRect(x, y, 2, 2)
           }
         }
       }
 
+      ctx.globalAlpha = 0.9
       sprites.forEach(desenharSprite)
+      ctx.globalAlpha = 1
 
       particulas.forEach((p) => {
         ctx.globalAlpha = Math.max(p.vida, 0)

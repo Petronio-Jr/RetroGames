@@ -11,6 +11,7 @@ import { obterMensagemErro } from '../../api/erros'
 
 import CardJogo from '../../components/CardJogo'
 import Paginacao from '../../components/Paginacao'
+import HeroCatalogo from '../../components/HeroCatalogo'
 
 import {
   Carregando,
@@ -173,14 +174,9 @@ function Catalogo() {
 
   return (
     <div className="container py-4">
-      <div className="mb-4">
-        <h1>Catálogo de jogos</h1>
-        <p className="text-muted">
-          Explore nossa coleção de jogos retrô.
-        </p>
-      </div>
+      <HeroCatalogo />
 
-      <form onSubmit={pesquisar} className="row g-3 mb-4">
+      <form id="jogos" onSubmit={pesquisar} className="row g-3 mb-4">
         <div className="col-md-5">
           <label htmlFor="busca" className="form-label">
             Buscar jogo

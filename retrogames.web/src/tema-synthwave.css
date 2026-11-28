@@ -1,0 +1,564 @@
+/* ==========================================================================
+   RetroGames — tema "Synthwave" (azul-noite, ondas roxas, neon ciano e magenta)
+   ARQUIVO ÚNICO: substitui tema-retro.css, tema-vault.css e tema-vault-retro.css.
+   No main.jsx deixe só esta linha (depois do index.css):
+       import './tema-synthwave.css'
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@600;700&family=Press+Start+2P&display=swap');
+
+:root {
+  --s-bg: #07051f;
+  --s-surface: rgba(8, 4, 38, 0.86);
+  --s-surface-solid: #170d4a;
+  --s-surface-2: rgba(255, 255, 255, 0.1);
+  --s-line: rgba(255, 255, 255, 0.14);
+  --s-text: #ffffff;
+  --s-muted: #b9b3dd;
+  --s-cyan: #3ee6ff;
+  --s-magenta: #ff3fd8;
+  --s-purple: #8a4dff;
+  --s-yellow: #ffd23f;
+  --s-green: #5ff0a0;
+  --s-grad: linear-gradient(90deg, #ff3fd8, #8a4dff);
+  --s-grad-title: linear-gradient(180deg, #3ee6ff 0%, #8aa7ff 38%, #ff3fd8 78%, #c026d3 100%);
+  --s-pixel: 'Press Start 2P', ui-monospace, 'Courier New', monospace;
+  --s-display: 'Orbitron', 'Inter', system-ui, sans-serif;
+  --s-body: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  --bs-body-font-family: var(--s-body);
+  --bs-body-color: var(--s-text);
+  --bs-body-color-rgb: 255, 255, 255;
+  --bs-body-bg: var(--s-bg);
+  --bs-body-bg-rgb: 7, 5, 31;
+  --bs-heading-color: var(--s-text);
+  --bs-secondary-color: var(--s-muted); /* .text-muted */
+  --bs-border-color: var(--s-line);
+  --bs-primary-rgb: 255, 63, 216;
+  --bs-success-rgb: 95, 240, 160;
+  --bs-dark-rgb: 7, 5, 31;
+  --bs-link-color: var(--s-cyan);
+  --bs-link-hover-color: #9ff3ff;
+
+  color: var(--s-text);
+  background-color: var(--s-bg);
+}
+
+/* O body PRECISA ser transparente: o fundo (canvas) fica atrás dele. */
+body { font-family: var(--s-body); background: transparent; }
+
+#root { min-height: 100vh; display: flex; flex-direction: column; }
+#root > main { flex: 1 0 auto; }
+
+::selection { background: var(--s-magenta); color: #fff; }
+:where(a, button, input, select):focus-visible { outline: 2px solid var(--s-cyan); outline-offset: 2px; }
+
+/* --------------------------------------------------------------------------
+   Fundo: degradê azul-noite + ondas roxas + canvas interativo
+   (components/FundoInterativo.jsx)
+   -------------------------------------------------------------------------- */
+.fundo-interativo {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 600' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%234412a8'/%3E%3Cstop offset='1' stop-color='%238a1fc8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0 400 C 200 320 380 330 560 430 C 740 530 900 540 1080 440 C 1240 350 1360 340 1440 390 L1440 600 L0 600 Z' fill='url(%23g)' fill-opacity='0.7'/%3E%3C/svg%3E") bottom / 100% 48% no-repeat,
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 600' preserveAspectRatio='none'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%236a14d6'/%3E%3Cstop offset='1' stop-color='%23a21fd8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cpath d='M0 250 C 170 110 340 110 520 240 C 700 370 830 420 1010 300 C 1190 180 1320 140 1440 220 L1440 600 L0 600 Z' fill='url(%23g)' fill-opacity='0.62'/%3E%3C/svg%3E") bottom / 100% 64% no-repeat,
+    radial-gradient(700px 420px at 50% 22%, rgba(138, 77, 255, 0.28), transparent 70%),
+    linear-gradient(180deg, #07051f 0%, #100a45 55%, #1a0a55 100%);
+}
+
+/* --------------------------------------------------------------------------
+   Tipografia
+   -------------------------------------------------------------------------- */
+h1, .h1 { font-family: var(--s-pixel); font-weight: 400; line-height: 1.5; }
+h2, .h4, .h5 { font-weight: 600; letter-spacing: -0.01em; }
+h2.h4 { font-family: var(--s-pixel); font-size: 0.85rem; font-weight: 400; line-height: 1.7; }
+
+/* --------------------------------------------------------------------------
+   Menu: barra de vidro, links em caixa alta, "Entrar" em contorno
+   -------------------------------------------------------------------------- */
+.navbar.navbar-dark {
+  --bs-navbar-color: #d6d1f3;
+  --bs-navbar-hover-color: #fff;
+  --bs-navbar-active-color: #fff;
+  --bs-navbar-brand-color: #fff;
+  --bs-navbar-brand-hover-color: #fff;
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  padding: 0.8rem 0;
+  background: rgba(7, 5, 31, 0.6) !important;
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--s-line);
+}
+
+.navbar-brand,
+.navbar-brand.fw-bold {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-family: var(--s-pixel);
+  font-weight: 400 !important;
+  font-size: 0.8rem;
+  letter-spacing: 0.03em;
+}
+
+/* Direcional desenhado só com CSS */
+.navbar-brand::before {
+  content: '';
+  width: 22px;
+  height: 22px;
+  background:
+    linear-gradient(var(--s-cyan), var(--s-cyan)) center / 100% 34% no-repeat,
+    linear-gradient(var(--s-cyan), var(--s-cyan)) center / 34% 100% no-repeat;
+  filter: drop-shadow(0 0 6px rgba(62, 230, 255, 0.7));
+}
+
+.navbar .nav-link {
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding-inline: 1rem !important;
+}
+.navbar .nav-link.active { color: #fff; }
+.navbar-nav .nav-link.active::after {
+  content: '';
+  display: block;
+  height: 2px;
+  margin-top: 3px;
+  border-radius: 2px;
+  background: var(--s-grad);
+}
+
+.navbar .nav-link.btn.btn-link {
+  --bs-btn-color: #d6d1f3;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-border-width: 0;
+  text-decoration: none;
+  box-shadow: none;
+}
+
+.navbar-text { color: var(--s-muted); font-size: 0.85rem; }
+
+/* "Entrar" (quando não está logado) vira botão de contorno */
+.navbar-collapse > .navbar-nav:last-child a.nav-link {
+  border: 1.5px solid rgba(255, 255, 255, 0.55);
+  border-radius: 999px;
+  padding: 0.4rem 1.3rem !important;
+}
+.navbar-collapse > .navbar-nav:last-child a.nav-link:hover { background: #fff; color: #1a0a52; }
+.navbar-nav .nav-link.active.nav-link::after { display: block; }
+.navbar-collapse > .navbar-nav:last-child a.nav-link::after { display: none !important; }
+
+.navbar .btn-outline-light {
+  --bs-btn-color: #fff;
+  --bs-btn-border-color: rgba(255, 255, 255, 0.55);
+  --bs-btn-hover-bg: #fff;
+  --bs-btn-hover-color: #1a0a52;
+  --bs-btn-hover-border-color: #fff;
+}
+
+.navbar-toggler { border-color: var(--s-line); }
+
+.dropdown-menu {
+  --bs-dropdown-bg: #150c47;
+  --bs-dropdown-color: #fff;
+  --bs-dropdown-border-color: var(--s-line);
+  --bs-dropdown-border-radius: 16px;
+  --bs-dropdown-link-color: #fff;
+  --bs-dropdown-link-hover-bg: rgba(255, 255, 255, 0.1);
+  --bs-dropdown-link-hover-color: #fff;
+  --bs-dropdown-link-active-bg: var(--s-magenta);
+  --bs-dropdown-link-active-color: #fff;
+  padding: 0.5rem;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.55);
+}
+.dropdown-item { border-radius: 10px; }
+
+/* --------------------------------------------------------------------------
+   Hero do catálogo (components/HeroCatalogo.jsx)
+   -------------------------------------------------------------------------- */
+.hero {
+  position: relative;
+  padding: clamp(2.5rem, 7vw, 5rem) 0 clamp(2.5rem, 6vw, 4.5rem);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.hero-conteudo { position: relative; z-index: 2; max-width: 780px; margin: 0 auto; }
+
+.hero-titulo {
+  margin: 0 0 1.6rem;
+  font-size: clamp(2.2rem, 9vw, 6rem);
+  line-height: 1.12;
+  letter-spacing: 0.02em;
+}
+
+.hero-titulo span {
+  display: block;
+  background: var(--s-grad-title);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(3px 3px 0 #ffb347) drop-shadow(0 0 26px rgba(255, 63, 216, 0.4));
+}
+
+.hero-texto { max-width: 46ch; margin: 0 auto 2rem; font-size: 1.05rem; color: #e4e0fa; }
+
+.hero-botao {
+  display: inline-block;
+  padding: 0.8rem 2.4rem;
+  border: 2px solid #fff;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #fff;
+  text-decoration: none;
+  transition: background-color 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
+}
+.hero-botao:hover {
+  background: #fff;
+  color: #1a0a52;
+  box-shadow: 0 0 28px rgba(255, 255, 255, 0.45);
+  transform: translateY(-2px);
+}
+
+/* Formas decorativas */
+.hero-forma { position: absolute; z-index: 1; pointer-events: none; animation: flutuar 6s ease-in-out infinite; }
+
+.hero-estrela { width: 28px; height: 28px; background: #fff; clip-path: polygon(50% 0, 62% 36%, 100% 38%, 70% 60%, 80% 100%, 50% 76%, 20% 100%, 30% 60%, 0 38%, 38% 36%); }
+.hero-estrela-1 { top: 10%; left: 4%; }
+.hero-estrela-2 { bottom: 14%; right: 6%; width: 22px; height: 22px; animation-delay: -2s; }
+
+.hero-anel { border: 5px solid #fff; border-radius: 50%; }
+.hero-anel-1 { top: 22%; left: 11%; width: 64px; height: 64px; animation-delay: -1s; }
+.hero-anel-2 { bottom: 6%; right: 18%; width: 56px; height: 56px; animation-delay: -3s; }
+
+.hero-tetris-s { bottom: 20%; left: 12%; width: 66px; height: 40px; background: var(--s-yellow); clip-path: polygon(30% 0, 100% 0, 100% 50%, 68% 50%, 68% 100%, 0 100%, 0 50%, 30% 50%); animation-delay: -4s; }
+.hero-tetris-t { bottom: 4%; right: 30%; width: 66px; height: 44px; background: var(--s-yellow); clip-path: polygon(0 0, 100% 0, 100% 50%, 67% 50%, 67% 100%, 33% 100%, 33% 50%, 0 50%); transform: rotate(-28deg); animation-delay: -5s; }
+
+.hero-joystick { top: 4%; right: 8%; width: 110px; animation-duration: 7s; }
+.hero-portatil { top: 34%; right: 0; width: 230px; animation-duration: 8s; animation-delay: -2s; }
+
+@keyframes flutuar {
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -12px; }
+}
+
+@media (max-width: 991.98px) {
+  .hero-portatil { width: 170px; top: 40%; }
+  .hero-joystick { width: 84px; }
+}
+@media (max-width: 767.98px) {
+  .hero-portatil, .hero-joystick, .hero-tetris-t, .hero-anel-2 { display: none; }
+}
+
+/* --------------------------------------------------------------------------
+   Filtros
+   -------------------------------------------------------------------------- */
+form.row.g-3.mb-4 {
+  margin-inline: 0;
+  padding: 0.6rem 0.6rem 1.1rem;
+  background: rgba(8, 4, 38, 0.8);
+  border: 1px solid var(--s-line);
+  border-radius: 22px;
+  scroll-margin-top: 90px;
+}
+
+.form-label { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--s-muted); }
+
+.form-control, .form-select {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  padding: 0.6rem 1.1rem;
+}
+.form-control::placeholder { color: #8d86bb; }
+.form-control:focus, .form-select:focus {
+  color: #fff;
+  background-color: rgba(255, 255, 255, 0.1);
+  border-color: var(--s-cyan);
+  box-shadow: 0 0 0 0.2rem rgba(62, 230, 255, 0.22);
+}
+.form-control:disabled, .form-select:disabled { background-color: rgba(255, 255, 255, 0.04); color: var(--s-muted); }
+.form-select {
+  --bs-form-select-bg-img: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%233ee6ff' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+}
+.form-select option { background: #150c47; color: #fff; }
+.form-check-input { background-color: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.3); }
+.form-check-input:checked { background-color: var(--s-magenta); border-color: var(--s-magenta); }
+.invalid-feedback { color: #ff8aa0; }
+
+/* --------------------------------------------------------------------------
+   Botões
+   -------------------------------------------------------------------------- */
+.btn { font-weight: 600; border-radius: 999px; padding-inline: 1.3rem; transition: transform 0.15s, box-shadow 0.2s, background-color 0.15s, color 0.15s; }
+
+.btn-primary,
+.btn-success {
+  --bs-btn-color: #fff;
+  --bs-btn-bg: transparent;
+  --bs-btn-border-color: transparent;
+  --bs-btn-hover-color: #fff;
+  --bs-btn-hover-bg: transparent;
+  --bs-btn-hover-border-color: transparent;
+  --bs-btn-active-color: #fff;
+  --bs-btn-active-bg: transparent;
+  --bs-btn-active-border-color: transparent;
+  --bs-btn-disabled-color: #8d86bb;
+  --bs-btn-disabled-bg: rgba(255, 255, 255, 0.08);
+  --bs-btn-disabled-border-color: transparent;
+  background-image: var(--s-grad);
+  box-shadow: 0 6px 20px rgba(255, 63, 216, 0.3);
+}
+.btn-primary:hover, .btn-success:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(255, 63, 216, 0.5); }
+.btn-primary:active, .btn-success:active { transform: translateY(1px); }
+.btn-primary:disabled, .btn-success:disabled, .btn.disabled { background-image: none; box-shadow: none; transform: none; }
+
+.btn-outline-primary, .btn-outline-secondary {
+  --bs-btn-color: #fff;
+  --bs-btn-border-color: rgba(255, 255, 255, 0.5);
+  --bs-btn-hover-color: #1a0a52;
+  --bs-btn-hover-bg: #fff;
+  --bs-btn-hover-border-color: #fff;
+  --bs-btn-active-color: #1a0a52;
+  --bs-btn-active-bg: #fff;
+  --bs-btn-disabled-color: #8d86bb;
+  --bs-btn-disabled-border-color: rgba(255, 255, 255, 0.2);
+}
+.btn-outline-danger {
+  --bs-btn-color: #ff8aa0; --bs-btn-border-color: #ff8aa0;
+  --bs-btn-hover-color: #1a0a52; --bs-btn-hover-bg: #ff8aa0; --bs-btn-hover-border-color: #ff8aa0;
+}
+
+/* --------------------------------------------------------------------------
+   Capa do jogo (foto) — components/CapaJogo.jsx
+   -------------------------------------------------------------------------- */
+.capa {
+  position: relative;
+  display: block;
+  aspect-ratio: 1 / 0.85;
+  border-radius: 16px;
+  overflow: hidden;
+}
+.capa img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 0.9rem;
+  filter: drop-shadow(0 14px 18px rgba(0, 0, 0, 0.4));
+  transition: transform 0.35s ease;
+}
+
+.capa-tom-0 { background: linear-gradient(145deg, #8a4dff, #2b1a8f); }
+.capa-tom-1 { background: linear-gradient(145deg, #ff3fd8, #6a1fc0); }
+.capa-tom-2 { background: linear-gradient(145deg, #3ee6ff, #3a4de0); }
+.capa-tom-3 { background: linear-gradient(145deg, #ff9a4d, #d02a9f); }
+.capa-tom-4 { background: linear-gradient(145deg, #4a5cff, #130a5c); }
+
+/* Capa ilustrada (aparece enquanto a foto do jogo não existe) */
+.capa-cartucho {
+  position: absolute;
+  left: 50%;
+  top: 52%;
+  width: 56%;
+  aspect-ratio: 0.9 / 1;
+  transform: translate(-50%, -50%) rotate(-3deg);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0.7rem;
+  background: #d9d5cc;
+  border-radius: 10px 10px 6px 6px;
+  box-shadow: 0 18px 28px rgba(0, 0, 0, 0.4), inset 0 -6px 0 rgba(0, 0, 0, 0.1);
+}
+.capa-cartucho::before {
+  content: '';
+  position: absolute;
+  top: 8px; left: 14%; right: 14%;
+  height: 8px;
+  border-radius: 4px;
+  background: repeating-linear-gradient(90deg, #aaa598 0 6px, transparent 6px 10px);
+}
+.capa-cartucho::after {
+  content: '';
+  position: absolute;
+  left: 9%; right: 9%; top: 26%; bottom: 33%;
+  border-radius: 6px;
+  background: linear-gradient(160deg, #1a0a52, #4a2d9a);
+}
+.capa-cartucho-nome {
+  position: absolute;
+  z-index: 1;
+  left: 13%; right: 13%; top: 28%; bottom: 35%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-family: var(--s-pixel);
+  font-size: clamp(0.45rem, 0.9vw, 0.6rem);
+  line-height: 1.6;
+  color: #fff;
+}
+.capa-cartucho-plataforma {
+  font-size: 0.55rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #6b665a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.capa-detalhe { border-radius: 0; aspect-ratio: 16 / 7; }
+
+/* --------------------------------------------------------------------------
+   Cards: vidro sobre o fundo
+   -------------------------------------------------------------------------- */
+.card {
+  --bs-card-bg: transparent;
+  --bs-card-color: var(--s-text);
+  --bs-card-border-width: 1px;
+  --bs-card-border-color: var(--s-line);
+  --bs-card-border-radius: 22px;
+  --bs-card-inner-border-radius: 21px;
+  background: var(--s-surface);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  box-shadow: none !important;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:not(.card-jogo) { background: rgba(10, 6, 44, 0.9); overflow: hidden; }
+
+.card-jogo { padding: 0.7rem; }
+.card-jogo:hover {
+  transform: translateY(-5px);
+  border-color: rgba(255, 63, 216, 0.7);
+  box-shadow: 0 0 0 1px rgba(255, 63, 216, 0.5), 0 16px 40px rgba(255, 63, 216, 0.22) !important;
+}
+.card-jogo:hover .capa img { transform: scale(1.05); }
+.card-jogo .card-body { padding: 1rem 0.35rem 0.3rem; }
+
+.card-title { font-family: var(--s-pixel); font-size: 0.68rem; font-weight: 400; line-height: 1.8; margin-bottom: 0.4rem; }
+.card-jogo p { font-size: 0.85rem; margin-bottom: 0.3rem !important; }
+
+/* Etiqueta da plataforma */
+.card-jogo .badge.text-bg-secondary {
+  max-width: 100%;
+  white-space: normal;
+  text-align: left;
+  background: rgba(62, 230, 255, 0.12) !important;
+  color: #8ff1ff !important;
+  border: 1px solid rgba(62, 230, 255, 0.35);
+  font-size: 0.7rem;
+  font-weight: 600;
+}
+
+/* Preço */
+.card h5.text-success {
+  margin: 0.45rem 0 0.2rem !important;
+  font-family: var(--s-display);
+  font-size: 1.55rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #fff !important;
+  text-shadow: 0 0 16px rgba(62, 230, 255, 0.55);
+}
+
+.badge { border-radius: 999px; font-weight: 500; padding: 0.4em 0.8em; }
+.badge.text-bg-success, .badge.text-bg-danger { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.74rem; }
+.badge.text-bg-success::before, .badge.text-bg-danger::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; }
+.badge.text-bg-success { background: rgba(95, 240, 160, 0.12) !important; color: var(--s-green) !important; }
+.badge.text-bg-danger { background: rgba(255, 138, 160, 0.14) !important; color: #ff8aa0 !important; }
+.badge.bg-secondary { background: var(--s-surface-2) !important; }
+
+.card-jogo .btn-primary { padding-block: 0.7rem; margin-top: 0.9rem !important; }
+
+/* --------------------------------------------------------------------------
+   Alertas e estados
+   -------------------------------------------------------------------------- */
+.alert {
+  --bs-alert-color: var(--s-text);
+  --bs-alert-bg: rgba(10, 6, 44, 0.88);
+  --bs-alert-border-color: var(--s-line);
+  --bs-alert-border-radius: 22px;
+}
+.alert-danger { --bs-alert-color: #ffd5dd; --bs-alert-bg: rgba(255, 90, 120, 0.12); --bs-alert-border-color: rgba(255, 138, 160, 0.45); }
+.alert-warning { --bs-alert-color: #ffeab0; --bs-alert-bg: rgba(255, 210, 63, 0.1); --bs-alert-border-color: rgba(255, 210, 63, 0.4); }
+.alert-success { --bs-alert-color: #cdf9e0; --bs-alert-bg: rgba(95, 240, 160, 0.1); --bs-alert-border-color: rgba(95, 240, 160, 0.4); }
+.alert-secondary { border-style: dashed; padding-block: 2rem; }
+.spinner-border.text-primary { color: var(--s-cyan) !important; filter: drop-shadow(0 0 6px rgba(62, 230, 255, 0.6)); }
+
+/* --------------------------------------------------------------------------
+   Tabelas
+   -------------------------------------------------------------------------- */
+.table {
+  --bs-table-color: var(--s-text);
+  --bs-table-bg: transparent;
+  --bs-table-border-color: var(--s-line);
+  --bs-table-striped-color: var(--s-text);
+  --bs-table-striped-bg: rgba(255, 255, 255, 0.04);
+  --bs-table-hover-color: #fff;
+  --bs-table-hover-bg: rgba(255, 63, 216, 0.1);
+}
+.table thead th { font-size: 0.72rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: var(--s-cyan); }
+.table-responsive { background: rgba(10, 6, 44, 0.9); border: 1px solid var(--s-line); border-radius: 22px; padding: 0.5rem 1rem; }
+
+/* --------------------------------------------------------------------------
+   Paginação
+   -------------------------------------------------------------------------- */
+.pagination {
+  --bs-pagination-color: #fff;
+  --bs-pagination-bg: rgba(255, 255, 255, 0.07);
+  --bs-pagination-border-color: transparent;
+  --bs-pagination-hover-color: #fff;
+  --bs-pagination-hover-bg: rgba(255, 255, 255, 0.16);
+  --bs-pagination-hover-border-color: transparent;
+  --bs-pagination-focus-color: #fff;
+  --bs-pagination-focus-bg: rgba(255, 255, 255, 0.16);
+  --bs-pagination-active-color: #fff;
+  --bs-pagination-active-bg: var(--s-magenta);
+  --bs-pagination-active-border-color: var(--s-magenta);
+  --bs-pagination-disabled-color: #6f68a0;
+  --bs-pagination-disabled-bg: transparent;
+  --bs-pagination-disabled-border-color: transparent;
+  gap: 0.4rem;
+}
+.page-link { border-radius: 999px !important; font-weight: 600; min-width: 2.6rem; text-align: center; }
+.page-item:not(:first-child) .page-link { margin-left: 0; }
+
+/* --------------------------------------------------------------------------
+   Rodapé
+   -------------------------------------------------------------------------- */
+footer.bg-dark {
+  margin-top: 3rem;
+  padding-block: 1.6rem !important;
+  background: rgba(7, 5, 31, 0.85) !important;
+  border-top: 1px solid var(--s-line);
+  color: var(--s-muted) !important;
+}
+footer.bg-dark p { font-size: 0.85rem; }
+
+/* --------------------------------------------------------------------------
+   Quem prefere menos movimento
+   -------------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* Textos soltos sobre as ondas ficam legíveis */
+main h2.h4, main .text-muted { text-shadow: 0 1px 8px rgba(5, 2, 30, 0.9); }

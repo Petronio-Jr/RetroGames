@@ -13,7 +13,6 @@ function Layout() {
   } = useAutenticacao()
 
   const ehCliente = usuario?.perfil === 'Cliente'
-
   const navegar = useNavigate()
 
   async function lidarComSaida() {
@@ -26,18 +25,14 @@ function Layout() {
 
   return (
     <>
-      {/* NOVO: fundo retrô interativo */}
       <FundoInterativo />
 
-      {/* Barra de navegação */}
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
         <div className="container">
-
           <Link className="navbar-brand fw-bold" to="/">
             RetroGames
           </Link>
 
-          {/* Botão do menu para telas menores */}
           <button
             className="navbar-toggler"
             type="button"
@@ -50,9 +45,7 @@ function Layout() {
             <span className="navbar-toggler-icon"></span>
           </button>
 
-          {/* Itens da navegação */}
           <div className="collapse navbar-collapse" id="menuNavegacao">
-
             <ul className="navbar-nav me-auto">
               <li className="nav-item">
                 <NavLink
@@ -66,34 +59,35 @@ function Layout() {
                 </NavLink>
               </li>
 
-              {/* Menu exclusivo do cliente */}
-              {ehCliente && (
-                <>
-                  <li className="nav-item">
-                    <NavLink
-                      className={({ isActive }) =>
-                        `nav-link ${isActive ? 'active' : ''}`
-                      }
-                      to="/carrinho"
-                    >
-                      Carrinho
-                    </NavLink>
-                  </li>
-
-                  <li className="nav-item">
-                    <NavLink
-                      className={({ isActive }) =>
-                        `nav-link ${isActive ? 'active' : ''}`
-                      }
-                      to="/meus-pedidos"
-                    >
-                      Meus pedidos
-                    </NavLink>
-                  </li>
-                </>
+              {/* Visitantes e clientes podem acessar o carrinho */}
+              {!ehAdministrador && (
+                <li className="nav-item">
+                  <NavLink
+                    className={({ isActive }) =>
+                      `nav-link ${isActive ? 'active' : ''}`
+                    }
+                    to="/carrinho"
+                  >
+                    Carrinho
+                  </NavLink>
+                </li>
               )}
 
-              {/* Menu exclusivo do administrador */}
+              {/* Área exclusiva do cliente */}
+              {ehCliente && (
+                <li className="nav-item">
+                  <NavLink
+                    className={({ isActive }) =>
+                      `nav-link ${isActive ? 'active' : ''}`
+                    }
+                    to="/meus-pedidos"
+                  >
+                    Meus pedidos
+                  </NavLink>
+                </li>
+              )}
+
+              {/* Área exclusiva do administrador */}
               {ehAdministrador && (
                 <li className="nav-item dropdown">
                   <button
@@ -122,7 +116,6 @@ function Layout() {
               )}
             </ul>
 
-            {/* Área do usuário */}
             <ul className="navbar-nav">
               {!carregando && (
                 estaAutenticado ? (
@@ -151,17 +144,14 @@ function Layout() {
                 )
               )}
             </ul>
-
           </div>
         </div>
       </nav>
 
-      {/* Conteúdo da página */}
       <main className="container py-4">
         <Outlet />
       </main>
 
-      {/* Rodapé */}
       <footer className="bg-dark text-light py-3 mt-auto">
         <div className="container text-center">
           <p className="mb-0">
